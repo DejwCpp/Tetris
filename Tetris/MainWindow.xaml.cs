@@ -17,6 +17,7 @@ namespace Tetris
     public partial class MainWindow : Window
     {
         public double GameBoardWidth { get; set; } = 350;
+        private GameBoard gameBoard;
 
         public MainWindow()
         {
@@ -24,6 +25,10 @@ namespace Tetris
 
             // thank to this, xaml can use GameBoardWidth
             DataContext = this;
+
+            gameBoard = new GameBoard(18, 10);
         }
+
+        
     }
 }
