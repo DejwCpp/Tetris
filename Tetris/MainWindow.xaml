@@ -1,0 +1,81 @@
+﻿<Window x:Class="Tetris.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Tetris"
+        mc:Ignorable="d"
+        Title="Tetris"
+        ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="CenterScreen"
+        Width="600"
+        Height="550">
+    <Grid>
+        <!-- Główna siatka z dwoma kolumnami -->
+        <Grid.ColumnDefinitions>
+            <!-- Sekcja gry -->
+            <ColumnDefinition Width="*" />
+            <!-- Stała szerokość sekcji informacji -->
+            <ColumnDefinition Width="200" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Sekcja gry (dynamiczna szerokość) -->
+        <Border Grid.Column="0"
+                Background="Black"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Center"
+                MinHeight="400"
+                MinWidth="{Binding Path=GameBoardWidth}" 
+                MaxWidth="{Binding Path=GameBoardWidth}">
+            <Canvas Name="GameCanvas"
+                    Width="{Binding Path=GameBoardWidth}"
+                    Height="500"
+                    Background="Gray" />
+        </Border>
+
+        <!-- Sekcja informacji (stała wysokość i szerokość) -->
+        <StackPanel Grid.Column="1" 
+                    Background="#333"
+                    Width="200"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Top"
+                    Margin="10">
+
+            <!-- Numer poziomu -->
+            <TextBlock Text="Poziom: 1"
+                       FontSize="16"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       Margin="0,10,0,10"/>
+
+            <!-- Sekcja następnego bloku -->
+            <Border Width="150" Height="150"
+                    Background="White"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,20">
+                <Canvas Name="NextBlockCanvas" Background="LightGray" />
+            </Border>
+
+            <!-- Wynik -->
+            <TextBlock Text="Wynik: 0"
+                       FontSize="16"
+                       Foreground="White"
+                       HorizontalAlignment="Center"
+                       Margin="0,10,0,20"/>
+
+            <!-- Przycisk rozpoczęcia/wstrzymania gry -->
+            <Button Content="Start / Pauza"
+                    Width="150"
+                    Height="40"
+                    HorizontalAlignment="Center"
+                    Margin="0,10,0,10"/>
+
+            <!-- Przycisk ustawień -->
+            <Button Content="Ustawienia"
+                    Width="150"
+                    Height="40"
+                    HorizontalAlignment="Center"
+                    Margin="0,10,0,10"/>
+        </StackPanel>
+    </Grid>
+</Window>
