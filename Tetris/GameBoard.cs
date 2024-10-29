@@ -35,5 +35,25 @@ namespace Tetris
             return row >= 0 && row < board.GetLength(0) &&
                    column >= 0 && column < board.GetLength(1);
         }
+
+        public void DisplayGameBoard()
+        {
+
+        }
+
+        public void GenerateNewBlock()
+        {
+
+        }
+
+        public bool IsRowFull(int row)
+        {
+            return false;
+        }
+
+        public bool IsGameOver()
+        {
+            return false;
+        }
     }
 }
