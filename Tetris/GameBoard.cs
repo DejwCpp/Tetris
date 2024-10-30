@@ -6,6 +6,21 @@ using System.Threading.Tasks;
 
 namespace Tetris
 {
+    /**********************************************
+     * CLASS NAME: GameBoard
+     * 
+     * Varriables:
+     * - board int[,]
+     * Methods:
+     * - GameBoard(int rows, int columns)
+     * - SetCell(int row, int column, int value)
+     * - GetCell(int row, int column)
+     * - IsWithinBounds(int row, int column)
+     * - DisplayGameBoard()
+     * - GenerateNewBlock()
+     * - IsRowFull()
+     * - IsGameOver()
+     **********************************************/
     public class GameBoard
     {
         private int[,] board;
