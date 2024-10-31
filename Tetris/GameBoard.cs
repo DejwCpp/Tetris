@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Shapes;
 
 namespace Tetris
 {
@@ -24,6 +27,8 @@ namespace Tetris
     public class GameBoard
     {
         private int[,] board;
+        private Rectangle[,] cellRectangles;
+        private static readonly Random random = new Random();
 
         public GameBoard(int rows, int columns)
         {
@@ -51,9 +56,51 @@ namespace Tetris
                    column >= 0 && column < board.GetLength(1);
         }
 
-        public void DisplayGameBoard()
+        public void InitializeUIGameBoard(Canvas GameCanvas, int CellSize)
         {
+            cellRectangles = new Rectangle[board.GetLength(0), board.GetLength(1)];
 
+            for (int row = 0; row < board.GetLength(0); row++)
+            {
+                for (int col = 0; col < board.GetLength(1); col++)
+                {
+                    var rectangle = new Rectangle
+                    {
+                        Width = CellSize,
+                        Height = CellSize,
+                        Fill = GetCellColor(GetCell(row, col)),
+                        Stroke = Brushes.White,
+                        StrokeThickness = 0.5
+                    };
+
+                    Canvas.SetTop(rectangle, row * CellSize);
+                    Canvas.SetLeft(rectangle, col * CellSize);
+
+                    GameCanvas.Children.Add(rectangle);
+                    cellRectangles[row, col] = rectangle;
+                }
+            }
+        }
+
+        public void UpdateUIGameBoard()
+        {
+            for (int row = 0; row < board.GetLength(0); row++)
+            {
+                for (int col = 0; col < board.GetLength(1); col++)
+                {
+                    int cellValue = GetCell(row, col);
+                    cellRectangles[row, col].Fill = GetCellColor(cellValue);
+                }
+            }
+        }
+
+        private Brush GetCellColor(int cellValue)
+        {
+            Brush[] randomColor = { Brushes.Pink, Brushes.Yellow};
+
+            Brush finalColor = randomColor[random.Next(0, randomColor.Length)];
+
+            return cellValue == 0 ? Brushes.Black : finalColor;
         }
 
         public void GenerateNewBlock()

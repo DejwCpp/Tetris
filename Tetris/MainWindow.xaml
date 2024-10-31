@@ -8,9 +8,9 @@
         Title="Tetris"
         ResizeMode="CanResizeWithGrip"
         WindowStartupLocation="CenterScreen"
-        Width="600"
-        Height="550">
-    <Grid>
+        Width="450"
+        Height="450">
+    <Grid Background="Black">
         <!-- Główna siatka z dwoma kolumnami -->
         <Grid.ColumnDefinitions>
             <!-- Sekcja gry -->
@@ -29,13 +29,13 @@
                 MaxWidth="{Binding Path=GameBoardWidth}">
             <Canvas Name="GameCanvas"
                     Width="{Binding Path=GameBoardWidth}"
-                    Height="500"
-                    Background="Gray" />
+                    Height="400"
+                    Background="Black" />
         </Border>
 
         <!-- Sekcja informacji (stała wysokość i szerokość) -->
         <StackPanel Grid.Column="1" 
-                    Background="#333"
+                    Background="Black"
                     Width="200"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Top"

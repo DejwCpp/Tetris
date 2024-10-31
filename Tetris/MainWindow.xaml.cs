@@ -16,8 +16,9 @@ namespace Tetris
     /// </summary>
     public partial class MainWindow : Window
     {
-        public double GameBoardWidth { get; set; } = 350;
+        public double GameBoardWidth = 350;
         private GameBoard gameBoard;
+        private const int CellSize = 22;
 
         public MainWindow()
         {
@@ -27,6 +28,13 @@ namespace Tetris
             DataContext = this;
 
             gameBoard = new GameBoard(18, 10);
+            GameBoardWidth = gameBoard.Board.GetLength(1) * CellSize;
+
+            gameBoard.InitializeUIGameBoard(GameCanvas, CellSize);
+
+            gameBoard.SetCell(0, 5, 1);
+
+            gameBoard.UpdateUIGameBoard();
         }
 
         
