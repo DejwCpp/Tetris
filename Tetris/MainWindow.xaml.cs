@@ -19,6 +19,8 @@ namespace Tetris
         public double GameBoardWidth = 350;
         private GameBoard gameBoard;
         private const int CellSize = 22;
+        private const int GameBoardNumOfColumns = 10;
+        private const int GameBoardNumOfRows = 18;
 
         public MainWindow()
         {
@@ -27,12 +29,13 @@ namespace Tetris
             // thank to this, xaml can use GameBoardWidth
             DataContext = this;
 
-            gameBoard = new GameBoard(18, 10);
+            gameBoard = new GameBoard(GameBoardNumOfRows, GameBoardNumOfColumns);
             GameBoardWidth = gameBoard.Board.GetLength(1) * CellSize;
 
             gameBoard.InitializeUIGameBoard(GameCanvas, CellSize);
 
-            gameBoard.SetCell(0, 5, 1);
+            Block block = new Block();
+            block.GenerateBlock(gameBoard.Board);
 
             gameBoard.UpdateUIGameBoard();
         }

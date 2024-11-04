@@ -28,18 +28,20 @@ namespace Tetris
      *****************************/
     public class Block
     {
-        private int[,] TypeOfBlock;
+        private List<int[,]> TypeOfBlock;
         private string BlockColor;
         private int BlockFallSpeed;
 
         public Block()
         {
-
+            InitializeTypeOfBlock();
         }
 
-        public void GenerateBlock()
+        public void GenerateBlock(int[,] board)
         {
+            int startPoint = (board.GetLength(0) / 2) - 1;
 
+            // here start to write code when youre back
         }
 
         public void FallDown()
@@ -74,9 +76,89 @@ namespace Tetris
 
         /* private methods */
 
-        private void SetTypeOfBlock()
+        private void InitializeTypeOfBlock()
         {
+            /*
+             *  . . . .
+             *  # # # #
+             *  . . . .
+             *  . . . .
+             */
+            int[,] block1 = {
+                { 0, 0, 0, 0 },
+                { 1, 1, 1, 1 },
+                { 0, 0, 0, 0 },
+                { 0, 0, 0, 0 } };
 
+            /*  
+             *  # . .
+             *  # # #
+             *  . . .
+             */
+            int[,] block2 = {
+                { 1, 0, 0 },
+                { 1, 1, 1 },
+                { 0, 0, 0 } };
+
+            /*  
+             *  . . #
+             *  # # #
+             *  . . .
+             */
+            int[,] block3 = {
+                { 0, 0, 1 },
+                { 1, 1, 1 },
+                { 0, 0, 0 } };
+
+            /*  
+             *  . . . .
+             *  . # # .
+             *  . # # .
+             *  . . . .
+             */
+            int[,] block4 = {
+                { 0, 0, 0, 0 },
+                { 0, 1, 1, 0 },
+                { 0, 1, 1, 0 },
+                { 0, 0, 0, 0 } };
+
+            /*  
+             *  . # #
+             *  # # .
+             *  . . .
+             */
+            int[,] block5 = {
+                { 0, 1, 1 },
+                { 1, 1, 0 },
+                { 0, 0, 0 } };
+
+            /*  
+             *  . # .
+             *  # # #
+             *  . . .
+             */
+            int[,] block6 = {
+                { 0, 1, 0 },
+                { 1, 1, 1 },
+                { 0, 0, 0 } };
+
+            /*  
+             *  # # .
+             *  . # #
+             *  . . .
+             */
+            int[,] block7 = {
+                { 1, 1, 0 },
+                { 0, 1, 1 },
+                { 0, 0, 0 } };
+
+            TypeOfBlock.Add(block1);
+            TypeOfBlock.Add(block2);
+            TypeOfBlock.Add(block3);
+            TypeOfBlock.Add(block4);
+            TypeOfBlock.Add(block5);
+            TypeOfBlock.Add(block6);
+            TypeOfBlock.Add(block7);
         }
 
         private void SetBlockColor()
