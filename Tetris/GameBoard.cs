@@ -68,7 +68,7 @@ namespace Tetris
                     {
                         Width = CellSize,
                         Height = CellSize,
-                        Fill = GetCellColor(GetCell(row, col)),
+                        Fill = Brushes.Black,
                         Stroke = Brushes.White,
                         StrokeThickness = 0.5
                     };
@@ -82,25 +82,21 @@ namespace Tetris
             }
         }
 
-        public void UpdateUIGameBoard()
+        public void UpdateUIGameBoard(Block currentBlock)
         {
             for (int row = 0; row < board.GetLength(0); row++)
             {
                 for (int col = 0; col < board.GetLength(1); col++)
                 {
                     int cellValue = GetCell(row, col);
-                    cellRectangles[row, col].Fill = GetCellColor(cellValue);
+                    cellRectangles[row, col].Fill = GetCellColor(cellValue, currentBlock);
                 }
             }
         }
 
-        private Brush GetCellColor(int cellValue)
+        private Brush GetCellColor(int cellValue, Block currentBlock)
         {
-            Brush[] randomColor = { Brushes.Pink, Brushes.Yellow};
-
-            Brush finalColor = randomColor[random.Next(0, randomColor.Length)];
-
-            return cellValue == 0 ? Brushes.Black : finalColor;
+            return cellValue == 0 ? Brushes.Black : currentBlock.BlockColor;
         }
 
         public void GenerateNewBlock()

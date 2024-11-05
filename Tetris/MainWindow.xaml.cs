@@ -26,7 +26,7 @@ namespace Tetris
         {
             InitializeComponent();
 
-            // thank to this, xaml can use GameBoardWidth
+            // Set DataContext for binding
             DataContext = this;
 
             gameBoard = new GameBoard(GameBoardNumOfRows, GameBoardNumOfColumns);
@@ -35,9 +35,9 @@ namespace Tetris
             gameBoard.InitializeUIGameBoard(GameCanvas, CellSize);
 
             Block block = new Block();
-            block.GenerateBlock(gameBoard.Board);
+            block.GenerateBlock(gameBoard);
 
-            gameBoard.UpdateUIGameBoard();
+            gameBoard.UpdateUIGameBoard(block);
         }
 
         

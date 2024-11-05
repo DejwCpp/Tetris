@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace Tetris
 {
@@ -29,19 +30,33 @@ namespace Tetris
     public class Block
     {
         private List<int[,]> TypeOfBlock;
-        private string BlockColor;
+        public Brush BlockColor { get; private set; }
         private int BlockFallSpeed;
+        private static readonly Random random = new Random();
 
         public Block()
         {
+            TypeOfBlock = new List<int[,]>();
             InitializeTypeOfBlock();
         }
 
-        public void GenerateBlock(int[,] board)
+        public void GenerateBlock(GameBoard board)
         {
-            int startPoint = (board.GetLength(0) / 2) - 1;
+            int startPoint = (board.Board.GetLength(1) / 2) - 2;
+            int[,] spawnBlock = TypeOfBlock[random.Next(0, TypeOfBlock.Count)];
 
-            // here start to write code when youre back
+            Brush[] colors = { Brushes.Pink, Brushes.Yellow, Brushes.Green, Brushes.Blue, Brushes.Orange };
+            BlockColor = colors[random.Next(colors.Length)];
+
+            for (int i = 0; i < spawnBlock.GetLength(0); i++)
+            {
+                for (int j = 0; j < spawnBlock.GetLength(1); j++)
+                {
+                    if (spawnBlock[i, j] == 0) continue;
+                    
+                    board.SetCell(i, j + startPoint, 1);                    
+                }
+            }
         }
 
         public void FallDown()
@@ -111,16 +126,13 @@ namespace Tetris
                 { 0, 0, 0 } };
 
             /*  
-             *  . . . .
              *  . # # .
              *  . # # .
              *  . . . .
              */
             int[,] block4 = {
-                { 0, 0, 0, 0 },
-                { 0, 1, 1, 0 },
-                { 0, 1, 1, 0 },
-                { 0, 0, 0, 0 } };
+                { 1, 1 },
+                { 1, 1 } };
 
             /*  
              *  . # #
