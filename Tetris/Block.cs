@@ -31,52 +31,108 @@ namespace Tetris
     {
         private List<int[,]> TypeOfBlock;
         public Brush BlockColor { get; private set; }
-        private int BlockFallSpeed;
+        private int FallSpeedMs;
+        private int currentRow;
+        private int currentColumn;
+        private int[,] currentShape;
         private static readonly Random random = new Random();
 
         public Block()
         {
             TypeOfBlock = new List<int[,]>();
+            FallSpeedMs = 1000;
             InitializeTypeOfBlock();
         }
 
         public void GenerateBlock(GameBoard board)
         {
             int startPoint = (board.Board.GetLength(1) / 2) - 2;
-            int[,] spawnBlock = TypeOfBlock[random.Next(0, TypeOfBlock.Count)];
+            currentShape = TypeOfBlock[random.Next(0, TypeOfBlock.Count)];
 
             Brush[] colors = { Brushes.Pink, Brushes.Yellow, Brushes.Green, Brushes.Blue, Brushes.Orange };
             BlockColor = colors[random.Next(colors.Length)];
 
-            for (int i = 0; i < spawnBlock.GetLength(0); i++)
+            currentRow = 0;
+            currentColumn = startPoint;
+
+            PlaceBlockOnBoard(board);
+        }
+
+        public void FallDown(GameBoard board)
+        {
+            ClearBlockFromBoard(board);
+
+            if (CanChangePosition(board, 0, 1))
             {
-                for (int j = 0; j < spawnBlock.GetLength(1); j++)
+                currentRow++;
+            }
+
+            PlaceBlockOnBoard(board);
+        }
+
+        public void PlaceBlockOnBoard(GameBoard board)
+        {
+            for (int i = 0; i < currentShape.GetLength(0); i++)
+            {
+                for (int j = 0; j < currentShape.GetLength(1); j++)
                 {
-                    if (spawnBlock[i, j] == 0) continue;
-                    
-                    board.SetCell(i, j + startPoint, 1);                    
+                    if (currentShape[i, j] == 1)
+                    {
+                        board.SetCell(currentRow + i, currentColumn + j, 1);
+                    }
                 }
             }
         }
 
-        public void FallDown()
+        public void ClearBlockFromBoard(GameBoard board)
         {
-
+            for (int i = 0; i < currentShape.GetLength(0); i++)
+            {
+                for (int j = 0; j < currentShape.GetLength(1); j++)
+                {
+                    if (currentShape[i, j] == 1)
+                    {
+                        board.SetCell(currentRow + i, currentColumn + j, 0);
+                    }
+                }
+            }
         }
 
-        public void Movement()
+        public void MoveLeft(GameBoard board)
         {
-
+            if (CanChangePosition(board, -1, 0))
+            {
+                currentColumn--;
+            }
         }
 
-        public void MoveLeft()
+        public void MoveRight(GameBoard board)
         {
-
+            if (CanChangePosition(board, 1, 0))
+            {
+                currentColumn++;
+            }
         }
 
-        public void MoveRight()
+        private bool CanChangePosition(GameBoard board, int horizontal, int vertical)
         {
+            for (int i = 0; i < currentShape.GetLength(0); i++)
+            {
+                for (int j = 0; j < currentShape.GetLength(1); j++)
+                {
+                    if (currentShape[i, j] == 1)
+                    {
+                        int newRow = currentRow + i + vertical;
+                        int newCol = currentColumn + j + horizontal;
 
+                        if (!board.IsWithinBounds(newRow, newCol) || board.GetCell(newRow, newCol) != 0)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
         }
 
         public void Rotate()
@@ -181,6 +237,11 @@ namespace Tetris
         private void SetBlockFallSpeed()
         {
 
+        }
+
+        public int GetFallSpeedMs()
+        {
+            return FallSpeedMs;
         }
     }
 }

@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace Tetris
 {
@@ -21,6 +22,8 @@ namespace Tetris
         private const int CellSize = 22;
         private const int GameBoardNumOfColumns = 10;
         private const int GameBoardNumOfRows = 18;
+        private DispatcherTimer gameTimer;
+        private Block currentBlock;
 
         public MainWindow()
         {
@@ -34,12 +37,45 @@ namespace Tetris
 
             gameBoard.InitializeUIGameBoard(GameCanvas, CellSize);
 
-            Block block = new Block();
-            block.GenerateBlock(gameBoard);
+            // Generate the first block
+            currentBlock = new Block();
+            currentBlock.GenerateBlock(gameBoard);
 
-            gameBoard.UpdateUIGameBoard(block);
+            gameBoard.UpdateUIGameBoard(currentBlock);
+
+            // Set up the game timer
+            gameTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(currentBlock.GetFallSpeedMs())
+            };
+            gameTimer.Tick += GameTick;
+            gameTimer.Start();
+
+            this.KeyDown += OnKeyDown;
         }
 
-        
+        private void GameTick(object sender, EventArgs e)
+        {
+            currentBlock.FallDown(gameBoard);
+            gameBoard.UpdateUIGameBoard(currentBlock);
+        }
+
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            // Clear the current block position before moving
+            currentBlock.ClearBlockFromBoard(gameBoard);
+
+            if (e.Key == Key.Left)
+            {
+                currentBlock.MoveLeft(gameBoard);
+            }
+            if (e.Key == Key.Right)
+            {
+                currentBlock.MoveRight(gameBoard);
+            }
+
+            currentBlock.PlaceBlockOnBoard(gameBoard);
+            gameBoard.UpdateUIGameBoard(currentBlock);
+        }
     }
 }

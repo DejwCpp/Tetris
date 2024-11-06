@@ -32,7 +32,8 @@ namespace Tetris
 
         public GameBoard(int rows, int columns)
         {
-            board = new int[rows, columns];
+            // creating one extra wall on left, right and bottom that wont display in UI
+            board = new int[rows + 1, columns + 2];
         }
 
         public int[,] Board => board;
@@ -50,19 +51,19 @@ namespace Tetris
             return IsWithinBounds(row, column) ? board[row, column] : -1;
         }
 
-        private bool IsWithinBounds(int row, int column)
+        public bool IsWithinBounds(int row, int column)
         {
-            return row >= 0 && row < board.GetLength(0) &&
-                   column >= 0 && column < board.GetLength(1);
+            return row >= 0 && row < board.GetLength(0) - 1 &&
+                   column >= 1 && column < board.GetLength(1) - 1;
         }
 
         public void InitializeUIGameBoard(Canvas GameCanvas, int CellSize)
         {
             cellRectangles = new Rectangle[board.GetLength(0), board.GetLength(1)];
 
-            for (int row = 0; row < board.GetLength(0); row++)
+            for (int row = 0; row < board.GetLength(0) - 1; row++)
             {
-                for (int col = 0; col < board.GetLength(1); col++)
+                for (int col = 1; col < board.GetLength(1) - 1; col++)
                 {
                     var rectangle = new Rectangle
                     {
@@ -84,9 +85,9 @@ namespace Tetris
 
         public void UpdateUIGameBoard(Block currentBlock)
         {
-            for (int row = 0; row < board.GetLength(0); row++)
+            for (int row = 0; row < board.GetLength(0) - 1; row++)
             {
-                for (int col = 0; col < board.GetLength(1); col++)
+                for (int col = 1; col < board.GetLength(1) - 1; col++)
                 {
                     int cellValue = GetCell(row, col);
                     cellRectangles[row, col].Fill = GetCellColor(cellValue, currentBlock);
