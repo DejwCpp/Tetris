@@ -31,7 +31,7 @@ namespace Tetris
     {
         private List<int[,]> TypeOfBlock;
         public Brush BlockColor { get; private set; }
-        private int FallSpeedMs;
+        public int FallSpeedMs { get; private set; }
         private int currentRow;
         private int currentColumn;
         private int[,] currentShape;
@@ -237,11 +237,6 @@ namespace Tetris
         private void SetBlockFallSpeed()
         {
 
-        }
-
-        public int GetFallSpeedMs()
-        {
-            return FallSpeedMs;
         }
     }
 }

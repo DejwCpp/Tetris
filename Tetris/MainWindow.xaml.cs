@@ -17,13 +17,20 @@ namespace Tetris
     /// </summary>
     public partial class MainWindow : Window
     {
-        public double GameBoardWidth = 350;
+        private double GameBoardWidth = 350;
         private GameBoard gameBoard;
         private const int CellSize = 22;
         private const int GameBoardNumOfColumns = 10;
         private const int GameBoardNumOfRows = 18;
         private DispatcherTimer gameTimer;
         private Block currentBlock;
+
+        private double normalFallSpeed;
+        private double fastFallSpeed;
+        private bool isFastFalling;
+
+        private DispatcherTimer movementTimer;
+        private string movementDirection;
 
         public MainWindow()
         {
@@ -43,20 +50,50 @@ namespace Tetris
 
             gameBoard.UpdateUIGameBoard(currentBlock);
 
+
+            normalFallSpeed = currentBlock.FallSpeedMs;
+            fastFallSpeed = normalFallSpeed / 10;
+            isFastFalling = false;
+
             // Set up the game timer
             gameTimer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(currentBlock.GetFallSpeedMs())
+                Interval = TimeSpan.FromMilliseconds(normalFallSpeed)
             };
             gameTimer.Tick += GameTick;
             gameTimer.Start();
 
+            // Set up movement timer for left/right movement
+            movementTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(100)
+            };
+            movementTimer.Tick += MovementTick;
+
             this.KeyDown += OnKeyDown;
+            this.KeyUp += OnKeyUp;
         }
 
         private void GameTick(object sender, EventArgs e)
         {
             currentBlock.FallDown(gameBoard);
+            gameBoard.UpdateUIGameBoard(currentBlock);
+        }
+
+        private void MovementTick(object sender, EventArgs e)
+        {
+            currentBlock.ClearBlockFromBoard(gameBoard);
+
+            if (movementDirection == "Left")
+            {
+                currentBlock.MoveLeft(gameBoard);
+            }
+            if (movementDirection == "Right")
+            {
+                currentBlock.MoveRight(gameBoard);
+            }
+
+            currentBlock.PlaceBlockOnBoard(gameBoard);
             gameBoard.UpdateUIGameBoard(currentBlock);
         }
 
@@ -67,15 +104,48 @@ namespace Tetris
 
             if (e.Key == Key.Left)
             {
-                currentBlock.MoveLeft(gameBoard);
+                StartMovement("Left");
             }
             if (e.Key == Key.Right)
             {
-                currentBlock.MoveRight(gameBoard);
+                StartMovement("Right");
+            }
+            if (e.Key == Key.Down && !isFastFalling)
+            {
+                isFastFalling = true;
+                gameTimer.Interval = TimeSpan.FromMilliseconds(fastFallSpeed);
             }
 
             currentBlock.PlaceBlockOnBoard(gameBoard);
             gameBoard.UpdateUIGameBoard(currentBlock);
+        }
+
+        private void OnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Left || e.Key == Key.Right)
+            {
+                StopMovement();
+            }
+            if (e.Key == Key.Down && isFastFalling)
+            {
+                isFastFalling = false;
+                gameTimer.Interval = TimeSpan.FromMilliseconds(normalFallSpeed);
+            }
+        }
+
+        private void StartMovement(string direction)
+        {
+            if (movementDirection != direction)
+            {
+                movementDirection = direction;
+                movementTimer.Start();
+            }
+        }
+
+        private void StopMovement()
+        {
+            movementTimer.Stop();
+            movementDirection = null;
         }
     }
 }
