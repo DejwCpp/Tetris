@@ -32,6 +32,9 @@ namespace Tetris
         private DispatcherTimer movementTimer;
         private string movementDirection;
 
+        private bool isMovingLeft = false;
+        private bool isMovingRight = false;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -102,12 +105,16 @@ namespace Tetris
             // Clear the current block position before moving
             currentBlock.ClearBlockFromBoard(gameBoard);
 
-            if (e.Key == Key.Left)
+            if (e.Key == Key.Left && !isMovingLeft)
             {
+                isMovingLeft = true;
+                currentBlock.MoveLeft(gameBoard);
                 StartMovement("Left");
             }
-            if (e.Key == Key.Right)
+            if (e.Key == Key.Right && !isMovingRight)
             {
+                isMovingRight = true;
+                currentBlock.MoveRight(gameBoard);
                 StartMovement("Right");
             }
             if (e.Key == Key.Down && !isFastFalling)
@@ -122,8 +129,14 @@ namespace Tetris
 
         private void OnKeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Left || e.Key == Key.Right)
+            if (e.Key == Key.Left)
             {
+                isMovingLeft = false;
+                StopMovement();
+            }
+            if (e.Key == Key.Right)
+            {
+                isMovingRight= false;
                 StopMovement();
             }
             if (e.Key == Key.Down && isFastFalling)
@@ -144,8 +157,11 @@ namespace Tetris
 
         private void StopMovement()
         {
-            movementTimer.Stop();
-            movementDirection = null;
+            if (!isMovingLeft && !isMovingRight)
+            {
+                movementTimer.Stop();
+                movementDirection = null;
+            }
         }
     }
 }
