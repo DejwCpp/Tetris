@@ -62,7 +62,7 @@ namespace Tetris
         {
             ClearBlockFromBoard(board);
 
-            if (CanChangePosition(board, 0, 1))
+            if (CanChangePosition(board, currentShape, 0, 1))
             {
                 currentRow++;
             }
@@ -100,7 +100,7 @@ namespace Tetris
 
         public void MoveLeft(GameBoard board)
         {
-            if (CanChangePosition(board, -1, 0))
+            if (CanChangePosition(board, currentShape, -1, 0))
             {
                 currentColumn--;
             }
@@ -108,19 +108,19 @@ namespace Tetris
 
         public void MoveRight(GameBoard board)
         {
-            if (CanChangePosition(board, 1, 0))
+            if (CanChangePosition(board, currentShape, 1, 0))
             {
                 currentColumn++;
             }
         }
 
-        private bool CanChangePosition(GameBoard board, int horizontal, int vertical)
+        private bool CanChangePosition(GameBoard board, int[,] block, int horizontal, int vertical)
         {
             for (int i = 0; i < currentShape.GetLength(0); i++)
             {
                 for (int j = 0; j < currentShape.GetLength(1); j++)
                 {
-                    if (currentShape[i, j] == 1)
+                    if (block[i, j] == 1)
                     {
                         int newRow = currentRow + i + vertical;
                         int newCol = currentColumn + j + horizontal;
@@ -135,9 +135,24 @@ namespace Tetris
             return true;
         }
 
-        public void Rotate()
+        public void Rotate(GameBoard board)
         {
+            int N = currentShape.GetLength(0);
 
+            int[,] rotatedBlock = new int[N, N];
+
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    rotatedBlock[j, N - 1 - i] = currentShape[i, j];
+                }
+            }
+
+            if(CanChangePosition(board, rotatedBlock, 0, 0))
+            {
+                currentShape = rotatedBlock;
+            }
         }
 
         public void FallFaster()

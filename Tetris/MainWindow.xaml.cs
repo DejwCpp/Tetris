@@ -122,6 +122,10 @@ namespace Tetris
                 isFastFalling = true;
                 gameTimer.Interval = TimeSpan.FromMilliseconds(fastFallSpeed);
             }
+            if (e.Key == Key.Up)
+            {
+                currentBlock.Rotate(gameBoard);
+            }
 
             currentBlock.PlaceBlockOnBoard(gameBoard);
             gameBoard.UpdateUIGameBoard(currentBlock);
