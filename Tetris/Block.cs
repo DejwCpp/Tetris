@@ -49,7 +49,8 @@ namespace Tetris
             int startPoint = (board.Board.GetLength(1) / 2) - 2;
             currentShape = TypeOfBlock[random.Next(0, TypeOfBlock.Count)];
 
-            Brush[] colors = { Brushes.Pink, Brushes.Yellow, Brushes.Green, Brushes.Blue, Brushes.Orange };
+            string[] hexColors = { "#fcdb1c", "#ff8400", "#3dc930", "#eb0046", "#b330f0", "#0f6df2" };
+            Brush[] colors = hexColors.Select(hex => (Brush)new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex))).ToArray();
             BlockColor = colors[random.Next(colors.Length)];
 
             currentRow = 0;
