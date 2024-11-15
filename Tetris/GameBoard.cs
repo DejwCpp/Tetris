@@ -71,7 +71,7 @@ namespace Tetris
                         Height = CellSize,
                         Fill = Brushes.Black,
                         Stroke = Brushes.White,
-                        StrokeThickness = 0.5
+                        StrokeThickness = 0.3
                     };
 
                     Canvas.SetTop(rectangle, row * CellSize);
