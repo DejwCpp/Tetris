@@ -77,9 +77,9 @@ namespace Tetris
             {
                 for (int j = 0; j < currentShape.GetLength(1); j++)
                 {
-                    if (currentShape[i, j] == 1)
+                    if (currentShape[i, j] != 0)
                     {
-                        board.SetCell(currentRow + i, currentColumn + j, 1);
+                        board.SetCell(currentRow + i, currentColumn + j, 1, BlockColor);
                     }
                 }
             }
@@ -91,7 +91,7 @@ namespace Tetris
             {
                 for (int j = 0; j < currentShape.GetLength(1); j++)
                 {
-                    if (currentShape[i, j] == 1)
+                    if (currentShape[i, j] != 0)
                     {
                         board.SetCell(currentRow + i, currentColumn + j, 0);
                     }
@@ -149,7 +149,7 @@ namespace Tetris
             {
                 for (int j = 0; j < currentShape.GetLength(1); j++)
                 {
-                    if (block[i, j] == 1)
+                    if (block[i, j] != 0)
                     {
                         int newRow = currentRow + i + vertical;
                         int newCol = currentColumn + j + horizontal;

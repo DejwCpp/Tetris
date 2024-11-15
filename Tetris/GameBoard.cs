@@ -29,20 +29,31 @@ namespace Tetris
         private int[,] board;
         private Rectangle[,] cellRectangles;
         private static readonly Random random = new Random();
+        private Brush[,] cellColors;
 
         public GameBoard(int rows, int columns)
         {
             // creating one extra wall on left, right and bottom that wont display in UI
             board = new int[rows + 1, columns + 2];
+            cellColors = new Brush[rows + 1, columns + 2];
         }
 
         public int[,] Board => board;
 
-        public void SetCell(int row, int column, int value)
+        public void SetCell(int row, int column, int value, Brush color = null)
         {
             if (IsWithinBounds(row, column))
             {
                 board[row, column] = value;
+
+                if (value != 0 && color != null)
+                {
+                    cellColors[row, column] = color;
+                }
+                else if (value == 0)
+                {
+                    cellColors[row, column] = Brushes.Black;
+                }
             }
         }
 
@@ -71,7 +82,7 @@ namespace Tetris
                         Height = CellSize,
                         Fill = Brushes.Black,
                         Stroke = Brushes.White,
-                        StrokeThickness = 0.3
+                        StrokeThickness = 0.2
                     };
 
                     Canvas.SetTop(rectangle, row * CellSize);
@@ -90,14 +101,14 @@ namespace Tetris
                 for (int col = 1; col < board.GetLength(1) - 1; col++)
                 {
                     int cellValue = GetCell(row, col);
-                    cellRectangles[row, col].Fill = GetCellColor(cellValue, currentBlock);
+                    cellRectangles[row, col].Fill = GetCellColor(cellValue, row, col);
                 }
             }
         }
 
-        private Brush GetCellColor(int cellValue, Block currentBlock)
+        private Brush GetCellColor(int cellValue, int row, int col)
         {
-            return cellValue == 0 ? Brushes.Black : currentBlock.BlockColor;
+            return cellValue == 0 ? Brushes.Black : cellColors[row, col];
         }
 
         public void ClearFullRows()
@@ -120,6 +131,7 @@ namespace Tetris
             for (int col = 1; col < board.GetLength(1) - 1; col++)
             {
                 board[row, col] = 0;
+                cellColors[row, col] = Brushes.Black;
             }
         }
 
@@ -130,6 +142,8 @@ namespace Tetris
                 for (int col = 1; col < board.GetLength(1) - 1; col++)
                 {
                     board[row, col] = board[row - 1, col];
+
+                    cellColors[row, col] = cellColors[row - 1, col];
                 }
             }
 
@@ -137,6 +151,7 @@ namespace Tetris
             for (int col = 1; col < board.GetLength(1) - 1; col++)
             {
                 board[0, col] = 0;
+                cellColors[0, col] = Brushes.Black;
             }
         }
 
