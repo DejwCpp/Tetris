@@ -100,19 +100,53 @@ namespace Tetris
             return cellValue == 0 ? Brushes.Black : currentBlock.BlockColor;
         }
 
-        public void GenerateNewBlock()
+        public void ClearFullRows()
         {
+            for (int row = 0; row < board.GetLength(0) - 1; row++)
+            {
+                if (IsRowFull(row))
+                {
+                    ClearRow(row);
+                    ShiftRowsDown(row);
 
+                    // Recheck the same row after shifting
+                    row--;
+                }
+            }
+        }
+
+        private void ClearRow(int row)
+        {
+            for (int col = 1; col < board.GetLength(1) - 1; col++)
+            {
+                board[row, col] = 0;
+            }
+        }
+
+        private void ShiftRowsDown(int fromRow)
+        {
+            for (int row = fromRow; row > 0; row--)
+            {
+                for (int col = 1; col < board.GetLength(1) - 1; col++)
+                {
+                    board[row, col] = board[row - 1, col];
+                }
+            }
+
+            // Clear the topmost row
+            for (int col = 1; col < board.GetLength(1) - 1; col++)
+            {
+                board[0, col] = 0;
+            }
         }
 
         public bool IsRowFull(int row)
         {
-            return false;
-        }
-
-        public bool IsGameOver()
-        {
-            return false;
+            for (int col = 1; col < board.GetLength(1) - 1; col++)
+            {
+                if (board[row, col] == 0) return false;
+            }
+            return true;
         }
     }
 }

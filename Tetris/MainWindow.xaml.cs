@@ -24,6 +24,7 @@ namespace Tetris
         private const int GameBoardNumOfRows = 18;
         private DispatcherTimer gameTimer;
         private Block currentBlock;
+        private List<Block> activeBlocks = new List<Block>();
 
         private double normalFallSpeed;
         private double fastFallSpeed;
@@ -79,7 +80,26 @@ namespace Tetris
 
         private void GameTick(object sender, EventArgs e)
         {
-            currentBlock.FallDown(gameBoard);
+            if (!currentBlock.CanBlockFall(gameBoard))
+            {
+                activeBlocks.Add(currentBlock);
+                gameBoard.ClearFullRows();
+
+                // Create a new block
+                currentBlock = new Block();
+                currentBlock.GenerateBlock(gameBoard);
+
+                // Check if game over
+                if (!currentBlock.CanBlockFall(gameBoard))
+                {
+                    GameOver();
+                    return;
+                }
+            }
+            else
+            {
+                currentBlock.FallDown(gameBoard);
+            }
             gameBoard.UpdateUIGameBoard(currentBlock);
         }
 
@@ -126,6 +146,10 @@ namespace Tetris
             {
                 currentBlock.Rotate(gameBoard);
             }
+            if (e.Key == Key.Space)
+            {
+                currentBlock.FallToTheVeryBottom(gameBoard);
+            }
 
             currentBlock.PlaceBlockOnBoard(gameBoard);
             gameBoard.UpdateUIGameBoard(currentBlock);
@@ -140,7 +164,7 @@ namespace Tetris
             }
             if (e.Key == Key.Right)
             {
-                isMovingRight= false;
+                isMovingRight = false;
                 StopMovement();
             }
             if (e.Key == Key.Down && isFastFalling)
@@ -166,6 +190,29 @@ namespace Tetris
                 movementTimer.Stop();
                 movementDirection = null;
             }
+        }
+
+        private void GameOver()
+        {
+            gameTimer.Stop();
+            MessageBox.Show("Game over. Try again!");
+            ResetGame();
+        }
+
+        private void ResetGame()
+        {
+            activeBlocks.Clear();
+            gameBoard = new GameBoard(GameBoardNumOfRows, GameBoardNumOfColumns);
+            gameBoard.InitializeUIGameBoard(GameCanvas, CellSize);
+
+            // Generate the first block
+            currentBlock = new Block();
+            currentBlock.GenerateBlock(gameBoard);
+            gameBoard.UpdateUIGameBoard(currentBlock);
+
+            // Restart the timer
+            gameTimer.Interval = TimeSpan.FromMilliseconds(normalFallSpeed);
+            gameTimer.Start();
         }
     }
 }

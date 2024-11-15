@@ -114,6 +114,34 @@ namespace Tetris
             }
         }
 
+        public void Rotate(GameBoard board)
+        {
+            int N = currentShape.GetLength(0);
+
+            int[,] rotatedBlock = new int[N, N];
+
+            for (int i = 0; i < N; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    rotatedBlock[j, N - 1 - i] = currentShape[i, j];
+                }
+            }
+
+            if(CanChangePosition(board, rotatedBlock, 0, 0))
+            {
+                currentShape = rotatedBlock;
+            }
+        }
+
+        public void FallToTheVeryBottom(GameBoard board)
+        {
+            while (CanChangePosition(board, currentShape, 0, 1))
+            {
+                currentRow++;
+            }
+        }
+
         private bool CanChangePosition(GameBoard board, int[,] block, int horizontal, int vertical)
         {
             for (int i = 0; i < currentShape.GetLength(0); i++)
@@ -135,30 +163,14 @@ namespace Tetris
             return true;
         }
 
-        public void Rotate(GameBoard board)
+        public bool CanBlockFall(GameBoard gameBoard)
         {
-            int N = currentShape.GetLength(0);
-
-            int[,] rotatedBlock = new int[N, N];
-
-            for (int i = 0; i < N; i++)
-            {
-                for (int j = 0; j < N; j++)
-                {
-                    rotatedBlock[j, N - 1 - i] = currentShape[i, j];
-                }
-            }
-
-            if(CanChangePosition(board, rotatedBlock, 0, 0))
-            {
-                currentShape = rotatedBlock;
-            }
+            ClearBlockFromBoard(gameBoard);
+            bool canFall = CanChangePosition(gameBoard, currentShape, 0, 1);
+            PlaceBlockOnBoard(gameBoard);
+            return canFall;
         }
 
-        public void FallFaster()
-        {
-
-        }
 
         /* private methods */
 
@@ -242,16 +254,6 @@ namespace Tetris
             TypeOfBlock.Add(block5);
             TypeOfBlock.Add(block6);
             TypeOfBlock.Add(block7);
-        }
-
-        private void SetBlockColor()
-        {
-
-        }
-
-        private void SetBlockFallSpeed()
-        {
-
         }
     }
 }
