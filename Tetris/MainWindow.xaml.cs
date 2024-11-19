@@ -22,7 +22,6 @@ namespace Tetris
         private const int CellSize = 22;
         private const int GameBoardNumOfColumns = 10;
         private const int GameBoardNumOfRows = 18;
-        private DispatcherTimer gameTimer;
         private Block currentBlock;
         private List<Block> activeBlocks = new List<Block>();
 
@@ -30,11 +29,15 @@ namespace Tetris
         private double fastFallSpeed;
         private bool isFastFalling;
 
+        private DispatcherTimer gameTimer;
         private DispatcherTimer movementTimer;
         private string movementDirection;
 
         private bool isMovingLeft = false;
         private bool isMovingRight = false;
+
+        public int score { get; set; } = 0;
+        private int gameLvl { get; set; } = 1;
 
         public MainWindow()
         {
@@ -43,7 +46,7 @@ namespace Tetris
             // Set DataContext for binding
             DataContext = this;
 
-            gameBoard = new GameBoard(GameBoardNumOfRows, GameBoardNumOfColumns);
+            gameBoard = new GameBoard(this, GameBoardNumOfRows, GameBoardNumOfColumns);
             GameBoardWidth = gameBoard.Board.GetLength(1) * CellSize;
 
             gameBoard.InitializeUIGameBoard(GameCanvas, CellSize);
@@ -95,6 +98,11 @@ namespace Tetris
                     GameOver();
                     return;
                 }
+                // 4 because 1 square == 1 point (Each block has 4 squares)
+                AddScore(4);
+                scoreLabel.Text = "Wynik: " + score.ToString();
+
+                UpdateGameLevel();
             }
             else
             {
@@ -192,6 +200,30 @@ namespace Tetris
             }
         }
 
+        public void AddScore(int points)
+        {
+            score += points;
+        }
+
+        private void UpdateGameLevel()
+        {
+            if (score >= 100) UpdateGameInfo(2, 200);
+            if (score >= 250) UpdateGameInfo(3, 200);
+            if (score >= 500) UpdateGameInfo(4, 200);
+            if (score >= 1000) UpdateGameInfo(5, 200);
+            if (score >= 2000) UpdateGameInfo(6, 100);
+        }
+
+        private void UpdateGameInfo(int level, int substractFallSpeedMs)
+        {
+            gameLvl = level;
+            gameLvlLabel.Text = "Poziom: " + gameLvl.ToString();
+            currentBlock.FallSpeedMs -= substractFallSpeedMs;
+            normalFallSpeed = currentBlock.FallSpeedMs;
+            fastFallSpeed = normalFallSpeed / 10;
+            gameTimer.Interval = TimeSpan.FromMilliseconds(normalFallSpeed);
+        }
+
         private void GameOver()
         {
             gameTimer.Stop();
@@ -202,7 +234,7 @@ namespace Tetris
         private void ResetGame()
         {
             activeBlocks.Clear();
-            gameBoard = new GameBoard(GameBoardNumOfRows, GameBoardNumOfColumns);
+            gameBoard = new GameBoard(this, GameBoardNumOfRows, GameBoardNumOfColumns);
             gameBoard.InitializeUIGameBoard(GameCanvas, CellSize);
 
             // Generate the first block
@@ -213,6 +245,13 @@ namespace Tetris
             // Restart the timer
             gameTimer.Interval = TimeSpan.FromMilliseconds(normalFallSpeed);
             gameTimer.Start();
+
+            // Reset the score
+            score = 0;
+            scoreLabel.Text = "Wynik: 0";
+
+            // Reset the level
+            gameLvlLabel.Text = "Poziom: 0";
         }
     }
 }

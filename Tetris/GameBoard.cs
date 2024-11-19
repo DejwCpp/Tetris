@@ -13,32 +13,43 @@ namespace Tetris
      * CLASS NAME: GameBoard
      * 
      * Varriables:
+     * - _mainWindow MainWindow
      * - board int[,]
+     * - Board int[,]
+     * - cellRectangles Rectangle[,]
+     * - random Random
+     * - cellColors Brush[,]
      * Methods:
-     * - GameBoard(int rows, int columns)
-     * - SetCell(int row, int column, int value)
+     * - GameBoard(MainWindow mainWindow, int rows, int columns)
+     * - SetCell(int row, int column, int value, Brush color = null)
      * - GetCell(int row, int column)
      * - IsWithinBounds(int row, int column)
-     * - DisplayGameBoard()
-     * - GenerateNewBlock()
-     * - IsRowFull()
-     * - IsGameOver()
+     * - InitializeUIGameBoard(Canvas GameCanvas, int CellSize)
+     * - UpdateUIGameBoard(Block currentBlock)
+     * - GetCellColor(int cellValue, int row, int col)
+     * - ClearFullRows()
+     * - ClearRow(int row)
+     * - ShiftRowsDown(int fromRow)
+     * - IsRowFull(int row)
      **********************************************/
     public class GameBoard
     {
+        private MainWindow _mainWindow;
+
         private int[,] board;
+        public int[,] Board => board;
         private Rectangle[,] cellRectangles;
         private static readonly Random random = new Random();
         private Brush[,] cellColors;
 
-        public GameBoard(int rows, int columns)
+        public GameBoard(MainWindow mainWindow, int rows, int columns)
         {
+            _mainWindow = mainWindow;
             // creating one extra wall on left, right and bottom that wont display in UI
             board = new int[rows + 1, columns + 2];
             cellColors = new Brush[rows + 1, columns + 2];
         }
 
-        public int[,] Board => board;
 
         public void SetCell(int row, int column, int value, Brush color = null)
         {
@@ -113,6 +124,9 @@ namespace Tetris
 
         public void ClearFullRows()
         {
+            int countFullRows = 0;
+            int scoreBonus = 0;
+
             for (int row = 0; row < board.GetLength(0) - 1; row++)
             {
                 if (IsRowFull(row))
@@ -122,7 +136,20 @@ namespace Tetris
 
                     // Recheck the same row after shifting
                     row--;
+
+                    countFullRows++;
                 }
+            }
+            // Add points for full row
+            for (int i = 0; i < countFullRows; i++)
+            {
+                // 1st row => 10 points
+                // 2nd row => 20 points
+                // 3rd row => 30 points
+                // 4rd row => 40 points
+                _mainWindow.AddScore(10 + scoreBonus);
+                _mainWindow.scoreLabel.Text = "Wynik: " + _mainWindow.score.ToString();
+                scoreBonus += 10;
             }
         }
 

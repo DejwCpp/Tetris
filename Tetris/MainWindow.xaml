@@ -42,7 +42,8 @@
                     Margin="10">
 
             <!-- Numer poziomu -->
-            <TextBlock Text="Poziom: 1"
+            <TextBlock Name="gameLvlLabel"
+                       Text="Poziom: 1"
                        FontSize="16"
                        Foreground="White"
                        HorizontalAlignment="Center"
@@ -57,7 +58,8 @@
             </Border>
 
             <!-- Wynik -->
-            <TextBlock Text="Wynik: 0"
+            <TextBlock Name="scoreLabel"
+                       Text="Wynik: 0"
                        FontSize="16"
                        Foreground="White"
                        HorizontalAlignment="Center"

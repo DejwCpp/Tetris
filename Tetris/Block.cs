@@ -11,27 +11,32 @@ namespace Tetris
      * CLASS NAME: Block
      * 
      * Varriables:
-     * - TypeOfBlock int[,]
-     * - BlockColor string
-     * - BlockFallSpeed int
+     * - TypeOfBlock List<int[,]>
+     * - BlockColor Brush
+     * - FallSpeedMs int
+     * - currentRow int
+     * - currentColumn int
+     * - currentShape int[,]
+     * - random Random
      * Methods:
      * - Block()
-     * - GenerateBlock()
-     * - FallDown()
-     * - Movement()
-     * - MoveLeft()
-     * - MoveRight()
-     * - Rotate()
-     * - FallFaster()
-     * - SetTypeOfBlock()
-     * - SetBlockColor()
-     * - SetBlockFallSpeed()
+     * - GenerateBlock(GameBoard board)
+     * - FallDown(GameBoard board)
+     * - PlaceBlockOnBoard(GameBoard board)
+     * - ClearBlockFromBoard(GameBoard board)
+     * - MoveLeft(GameBoard board)
+     * - MoveRight(GameBoard board)
+     * - Rotate(GameBoard board)
+     * - FallToTheVeryBottom(GameBoard board)
+     * - CanChangePosition(GameBoard board, int[,] block, int horizontal, int vertical)
+     * - CanBlockFall(GameBoard gameBoard)
+     * - InitializeTypeOfBlock()
      *****************************/
     public class Block
     {
         private List<int[,]> TypeOfBlock;
         public Brush BlockColor { get; private set; }
-        public int FallSpeedMs { get; private set; }
+        public int FallSpeedMs { get; set; }
         private int currentRow;
         private int currentColumn;
         private int[,] currentShape;
@@ -48,6 +53,9 @@ namespace Tetris
         {
             int startPoint = (board.Board.GetLength(1) / 2) - 2;
             currentShape = TypeOfBlock[random.Next(0, TypeOfBlock.Count)];
+
+            // If its square shape, make it one block to the right
+            if (currentShape == TypeOfBlock[3]) startPoint++;
 
             string[] hexColors = { "#fcdb1c", "#ff8400", "#3dc930", "#eb0046", "#b330f0", "#0f6df2" };
             Brush[] colors = hexColors.Select(hex => (Brush)new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex))).ToArray();
@@ -171,9 +179,6 @@ namespace Tetris
             PlaceBlockOnBoard(gameBoard);
             return canFall;
         }
-
-
-        /* private methods */
 
         private void InitializeTypeOfBlock()
         {
