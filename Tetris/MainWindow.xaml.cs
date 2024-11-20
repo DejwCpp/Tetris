@@ -100,7 +100,6 @@ namespace Tetris
                 }
                 // 4 because 1 square == 1 point (Each block has 4 squares)
                 AddScore(4);
-                scoreLabel.Text = "Wynik: " + score.ToString();
 
                 UpdateGameLevel();
             }
@@ -203,6 +202,7 @@ namespace Tetris
         public void AddScore(int points)
         {
             score += points;
+            scoreLabel.Text = "Wynik: " + score.ToString();
         }
 
         private void UpdateGameLevel()

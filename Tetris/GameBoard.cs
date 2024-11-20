@@ -148,7 +148,6 @@ namespace Tetris
                 // 3rd row => 30 points
                 // 4rd row => 40 points
                 _mainWindow.AddScore(10 + scoreBonus);
-                _mainWindow.scoreLabel.Text = "Wynik: " + _mainWindow.score.ToString();
                 scoreBonus += 10;
             }
         }
