@@ -23,7 +23,8 @@ namespace Tetris
         private const int GameBoardNumOfColumns = 10;
         private const int GameBoardNumOfRows = 18;
         private Block currentBlock;
-        private List<Block> activeBlocks = new List<Block>();
+        private Block nextBlock;
+        //private List<Block> activeBlocks = new List<Block>();
 
         private double normalFallSpeed;
         private double fastFallSpeed;
@@ -54,6 +55,12 @@ namespace Tetris
             // Generate the first block
             currentBlock = new Block();
             currentBlock.GenerateBlock(gameBoard);
+            currentBlock.PlaceBlockOnBoard(gameBoard);
+
+            nextBlock = new Block();
+            nextBlock.GenerateBlock(gameBoard);
+
+            RenderNextBlock(nextBlock);
 
             gameBoard.UpdateUIGameBoard(currentBlock);
 
@@ -85,12 +92,17 @@ namespace Tetris
         {
             if (!currentBlock.CanBlockFall(gameBoard))
             {
-                activeBlocks.Add(currentBlock);
+                //activeBlocks.Add(currentBlock);
                 gameBoard.ClearFullRows();
 
                 // Create a new block
-                currentBlock = new Block();
-                currentBlock.GenerateBlock(gameBoard);
+                currentBlock.InheritBlock(gameBoard, nextBlock);
+                currentBlock.PlaceBlockOnBoard(gameBoard);
+
+                nextBlock = new Block();
+                nextBlock.GenerateBlock(gameBoard);
+
+                RenderNextBlock(nextBlock);
 
                 // Check if game over
                 if (!currentBlock.CanBlockFall(gameBoard))
@@ -224,6 +236,36 @@ namespace Tetris
             gameTimer.Interval = TimeSpan.FromMilliseconds(normalFallSpeed);
         }
 
+        private void RenderNextBlock(Block block)
+        {
+            NextBlockCanvas.Children.Clear();
+
+            int[,] shape = block.currentShape;
+            Brush color = block.BlockColor;
+
+            for (int i = 0; i < shape.GetLength(0); i++)
+            {
+                for (int j = 0;  j < shape.GetLength(1); j++)
+                {
+                    if (shape[i, j] != 0)
+                    {
+                        var rectangle = new Rectangle
+                        {
+                            Width = CellSize,
+                            Height = CellSize,
+                            Fill = color,
+                            Stroke = Brushes.White,
+                            StrokeThickness = 0.2
+                        };
+
+                        Canvas.SetTop(rectangle, i * CellSize);
+                        Canvas.SetLeft(rectangle, j * CellSize);
+                        NextBlockCanvas.Children.Add(rectangle);
+                    }
+                }
+            }
+        }
+
         private void GameOver()
         {
             gameTimer.Stop();
@@ -233,7 +275,7 @@ namespace Tetris
 
         private void ResetGame()
         {
-            activeBlocks.Clear();
+            //activeBlocks.Clear();
             gameBoard = new GameBoard(this, GameBoardNumOfRows, GameBoardNumOfColumns);
             gameBoard.InitializeUIGameBoard(GameCanvas, CellSize);
 

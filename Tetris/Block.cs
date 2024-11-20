@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace Tetris
@@ -39,7 +40,7 @@ namespace Tetris
         public int FallSpeedMs { get; set; }
         private int currentRow;
         private int currentColumn;
-        private int[,] currentShape;
+        public int[,] currentShape { get; private set; }
         private static readonly Random random = new Random();
 
         public Block()
@@ -64,7 +65,21 @@ namespace Tetris
             currentRow = 0;
             currentColumn = startPoint;
 
-            PlaceBlockOnBoard(board);
+            //PlaceBlockOnBoard(board);
+        }
+
+        public void InheritBlock(GameBoard board, Block block)
+        {
+            int startPoint = (board.Board.GetLength(1) / 2) - 2;
+
+            // If its square shape, make it one block to the right
+            if (currentShape == TypeOfBlock[3]) startPoint++;
+
+            currentRow = 0;
+            currentColumn = startPoint;
+
+            BlockColor = block.BlockColor;
+            currentShape = block.currentShape;
         }
 
         public void FallDown(GameBoard board)
