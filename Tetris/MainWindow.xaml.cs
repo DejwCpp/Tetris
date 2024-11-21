@@ -30,6 +30,8 @@ namespace Tetris
         private double fastFallSpeed;
         private bool isFastFalling;
 
+        private bool isSpacePressed = false;
+
         private DispatcherTimer gameTimer;
         private DispatcherTimer movementTimer;
         private string movementDirection;
@@ -92,6 +94,9 @@ namespace Tetris
         {
             if (!currentBlock.CanBlockFall(gameBoard))
             {
+                // activate movement again after clicking space
+                isSpacePressed = false;
+
                 //activeBlocks.Add(currentBlock);
                 gameBoard.ClearFullRows();
 
@@ -144,6 +149,16 @@ namespace Tetris
             // Clear the current block position before moving
             currentBlock.ClearBlockFromBoard(gameBoard);
 
+            if (e.Key == Key.Space)
+            {
+                isSpacePressed = true;
+                currentBlock.FallToTheVeryBottom(gameBoard);
+                currentBlock.PlaceBlockOnBoard(gameBoard);
+                gameBoard.UpdateUIGameBoard(currentBlock);
+                return;
+            }
+            if (isSpacePressed) return;
+
             if (e.Key == Key.Left && !isMovingLeft)
             {
                 isMovingLeft = true;
@@ -164,10 +179,6 @@ namespace Tetris
             if (e.Key == Key.Up)
             {
                 currentBlock.Rotate(gameBoard);
-            }
-            if (e.Key == Key.Space)
-            {
-                currentBlock.FallToTheVeryBottom(gameBoard);
             }
 
             currentBlock.PlaceBlockOnBoard(gameBoard);
@@ -219,18 +230,19 @@ namespace Tetris
 
         private void UpdateGameLevel()
         {
-            if (score >= 100) UpdateGameInfo(2, 200);
-            if (score >= 250) UpdateGameInfo(3, 200);
-            if (score >= 500) UpdateGameInfo(4, 200);
-            if (score >= 1000) UpdateGameInfo(5, 200);
-            if (score >= 2000) UpdateGameInfo(6, 100);
+            if (score >= 100) UpdateGameInfo(2, 800);
+            if (score >= 250) UpdateGameInfo(3, 700);
+            if (score >= 500) UpdateGameInfo(4, 600);
+            if (score >= 1000) UpdateGameInfo(5, 500);
+            if (score >= 2000) UpdateGameInfo(6, 400);
+            if (score >= 5000) UpdateGameInfo(7, 300);
         }
 
-        private void UpdateGameInfo(int level, int substractFallSpeedMs)
+        private void UpdateGameInfo(int level, int newFallSpeedMs)
         {
             gameLvl = level;
             gameLvlLabel.Text = "Poziom: " + gameLvl.ToString();
-            currentBlock.FallSpeedMs -= substractFallSpeedMs;
+            currentBlock.FallSpeedMs = newFallSpeedMs;
             normalFallSpeed = currentBlock.FallSpeedMs;
             fastFallSpeed = normalFallSpeed / 10;
             gameTimer.Interval = TimeSpan.FromMilliseconds(normalFallSpeed);

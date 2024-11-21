@@ -46,7 +46,7 @@ namespace Tetris
         public Block()
         {
             TypeOfBlock = new List<int[,]>();
-            FallSpeedMs = 1000;
+            FallSpeedMs = 900;
             InitializeTypeOfBlock();
         }
 
