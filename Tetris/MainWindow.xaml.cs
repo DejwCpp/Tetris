@@ -42,9 +42,12 @@ namespace Tetris
         public int score { get; set; } = 0;
         private int gameLvl { get; set; } = 1;
 
+        private MediaPlayer mediaPlayer;
+
         public MainWindow()
         {
             InitializeComponent();
+            PlaySoundtrack();
 
             // Set DataContext for binding
             DataContext = this;
@@ -94,37 +97,46 @@ namespace Tetris
         {
             if (!currentBlock.CanBlockFall(gameBoard))
             {
-                // activate movement again after clicking space
-                isSpacePressed = false;
+                HandleBlockLanding();
+            }
+            else
+            {
+                currentBlock.FallDown(gameBoard);
+                gameBoard.UpdateUIGameBoard(currentBlock);
+            }
+        }
 
-                //activeBlocks.Add(currentBlock);
-                gameBoard.ClearFullRows();
+        private void HandleBlockLanding()
+        {
+            // activate movement again after clicking space
+            isSpacePressed = false;
 
-                // Create a new block
-                currentBlock.InheritBlock(gameBoard, nextBlock);
-                currentBlock.PlaceBlockOnBoard(gameBoard);
+            //activeBlocks.Add(currentBlock);
+            gameBoard.ClearFullRows();
 
-                nextBlock = new Block();
-                nextBlock.GenerateBlock(gameBoard);
+            // Create a new block
+            currentBlock.InheritBlock(gameBoard, nextBlock);
+            currentBlock.PlaceBlockOnBoard(gameBoard);
 
-                RenderNextBlock(nextBlock);
+            nextBlock = new Block();
+            nextBlock.GenerateBlock(gameBoard);
+            RenderNextBlock(nextBlock);
 
-                // Check if game over
-                if (!currentBlock.CanBlockFall(gameBoard))
-                {
-                    GameOver();
-                    return;
-                }
+            gameBoard.UpdateUIGameBoard(currentBlock);
+
+            // Check if game over
+            if (!currentBlock.CanBlockFall(gameBoard))
+            {
+                GameOver();
+            }
+            else
+            {
                 // 4 because 1 square == 1 point (Each block has 4 squares)
                 AddScore(4);
 
                 UpdateGameLevel();
             }
-            else
-            {
-                currentBlock.FallDown(gameBoard);
-            }
-            gameBoard.UpdateUIGameBoard(currentBlock);
+            gameTimer.Interval = TimeSpan.FromMilliseconds(normalFallSpeed);
         }
 
         private void MovementTick(object sender, EventArgs e)
@@ -151,10 +163,13 @@ namespace Tetris
 
             if (e.Key == Key.Space)
             {
+                gameTimer.Interval = TimeSpan.FromMilliseconds(1);
+                gameTimer.Stop();
                 isSpacePressed = true;
                 currentBlock.FallToTheVeryBottom(gameBoard);
                 currentBlock.PlaceBlockOnBoard(gameBoard);
                 gameBoard.UpdateUIGameBoard(currentBlock);
+                gameTimer.Start();
                 return;
             }
             if (isSpacePressed) return;
@@ -255,23 +270,44 @@ namespace Tetris
             int[,] shape = block.currentShape;
             Brush color = block.BlockColor;
 
-            for (int i = 0; i < shape.GetLength(0); i++)
+            // Calculate the size of the shape
+            int rows = shape.GetLength(0);
+            int cols = shape.GetLength(1);
+
+            // Calculate scaling for rectangles
+            double rectangleSize = CellSize * 1.5;
+
+            // Calculate the center offset
+            double canvasWidth = NextBlockCanvas.ActualWidth;
+            double canvasHeight = NextBlockCanvas.ActualHeight;
+            double shapeWidth = cols * rectangleSize;
+            double shapeHeight = rows * rectangleSize;
+            double offsetX = (canvasWidth - shapeWidth) / 2;
+            double offsetY = (canvasHeight - shapeHeight) / 2;
+
+            // If its not a square go a little bit down
+            if (block.currentShape != block.TypeOfBlock[3])
             {
-                for (int j = 0;  j < shape.GetLength(1); j++)
+                offsetX += 16;
+            }
+
+            for (int i = 0; i < rows; i++)
+            {
+                for (int j = 0; j < cols; j++)
                 {
                     if (shape[i, j] != 0)
                     {
                         var rectangle = new Rectangle
                         {
-                            Width = CellSize,
-                            Height = CellSize,
+                            Width = rectangleSize,
+                            Height = rectangleSize,
                             Fill = color,
                             Stroke = Brushes.White,
-                            StrokeThickness = 0.2
+                            StrokeThickness = 0.4
                         };
 
-                        Canvas.SetTop(rectangle, i * CellSize);
-                        Canvas.SetLeft(rectangle, j * CellSize);
+                        Canvas.SetTop(rectangle, offsetX + i * rectangleSize);
+                        Canvas.SetLeft(rectangle, offsetY + j * rectangleSize);
                         NextBlockCanvas.Children.Add(rectangle);
                     }
                 }
@@ -281,13 +317,16 @@ namespace Tetris
         private void GameOver()
         {
             gameTimer.Stop();
+            mediaPlayer.Stop();
             MessageBox.Show("Game over. Try again!");
             ResetGame();
         }
 
         private void ResetGame()
         {
-            //activeBlocks.Clear();
+            // Start the music
+            mediaPlayer.Play();
+
             gameBoard = new GameBoard(this, GameBoardNumOfRows, GameBoardNumOfColumns);
             gameBoard.InitializeUIGameBoard(GameCanvas, CellSize);
 
@@ -306,6 +345,36 @@ namespace Tetris
 
             // Reset the level
             gameLvlLabel.Text = "Poziom: 0";
+        }
+
+        private void PlaySoundtrack()
+        {
+            try
+            {
+                mediaPlayer = new MediaPlayer();
+                //mediaPlayer.Open(new Uri("pack://application:,,,/Resources/TetrisTheme.mp3")); // Upewnij się, że ścieżka jest poprawna
+                mediaPlayer.Open(new Uri("tetrisTheme.mp3", UriKind.Relative));
+                mediaPlayer.MediaOpened += (sender, e) =>
+                {
+                    //MessageBox.Show("Plik audio załadowany pomyślnie.");
+                };
+                mediaPlayer.MediaFailed += (sender, e) =>
+                {
+                    MessageBox.Show("Błąd odtwarzania pliku audio: " + e.ErrorException.Message);
+                };
+
+                mediaPlayer.MediaEnded += (sender, e) =>
+                {
+                    mediaPlayer.Position = TimeSpan.Zero;
+                    mediaPlayer.Play();
+                };
+
+                mediaPlayer.Play();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Wystąpił błąd: " + ex.Message);
+            }
         }
     }
 }

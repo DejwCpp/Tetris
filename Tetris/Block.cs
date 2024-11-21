@@ -35,7 +35,7 @@ namespace Tetris
      *****************************/
     public class Block
     {
-        private List<int[,]> TypeOfBlock;
+        public List<int[,]> TypeOfBlock { get; private set; }
         public Brush BlockColor { get; private set; }
         public int FallSpeedMs { get; set; }
         private int currentRow;
@@ -64,8 +64,6 @@ namespace Tetris
 
             currentRow = 0;
             currentColumn = startPoint;
-
-            //PlaceBlockOnBoard(board);
         }
 
         public void InheritBlock(GameBoard board, Block block)
