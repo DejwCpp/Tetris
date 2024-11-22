@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="settingsIcon.png" />
     <None Remove="tetrisTheme.mp3" />
   </ItemGroup>
 
@@ -16,6 +17,10 @@
     <Content Include="tetrisTheme.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="settingsIcon.png" />
   </ItemGroup>
 
 </Project>

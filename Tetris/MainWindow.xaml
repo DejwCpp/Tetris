@@ -10,23 +10,37 @@
         WindowStartupLocation="CenterScreen"
         Width="450"
         Height="450">
+    <!-- Preventing button to change background after hover -->
+    <Window.Resources>
+        <Style x:Key="NoHoverButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid Background="Black">
         <!-- Główna siatka z dwoma kolumnami -->
         <Grid.ColumnDefinitions>
             <!-- Sekcja gry -->
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition />
             <!-- Stała szerokość sekcji informacji -->
-            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="190" />
         </Grid.ColumnDefinitions>
 
         <!-- Sekcja gry (dynamiczna szerokość) -->
         <Border Grid.Column="0"
                 Background="Black"
-                HorizontalAlignment="Stretch"
                 VerticalAlignment="Center"
                 MinHeight="400"
                 MinWidth="{Binding Path=GameBoardWidth}" 
-                MaxWidth="{Binding Path=GameBoardWidth}">
+                MaxWidth="{Binding Path=GameBoardWidth}" Height="400">
             <Canvas Name="GameCanvas"
                     Width="{Binding Path=GameBoardWidth}"
                     Height="400"
@@ -39,11 +53,11 @@
                     Width="200"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Top"
-                    Margin="10">
+                    Margin="0,10,0,0" Height="424">
 
             <!-- Numer poziomu -->
             <TextBlock Name="gameLvlLabel"
-                       Text="Poziom: 1"
+                       Text="Level 1"
                        FontSize="16"
                        Foreground="White"
                        HorizontalAlignment="Center"
@@ -51,32 +65,22 @@
 
             <!-- Sekcja następnego bloku -->
             <Border Width="150" Height="150"
-                    Background="White"
+                    Background="#0d1321"
                     Margin="0,0,0,20">
                 <Canvas Name="NextBlockCanvas" Background="white" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
 
             <!-- Wynik -->
             <TextBlock Name="scoreLabel"
-                       Text="Wynik: 0"
+                       Text="Score: 0"
                        FontSize="16"
                        Foreground="White"
                        HorizontalAlignment="Center"
                        Margin="0,10,0,20"/>
-
-            <!-- Przycisk rozpoczęcia/wstrzymania gry -->
-            <Button Content="Start / Pauza"
-                    Width="150"
-                    Height="40"
-                    HorizontalAlignment="Center"
-                    Margin="0,10,0,10"/>
-
-            <!-- Przycisk ustawień -->
-            <Button Content="Ustawienia"
-                    Width="150"
-                    Height="40"
-                    HorizontalAlignment="Center"
-                    Margin="0,10,0,10"/>
+            <Button Click="OpenSettings" Background="Transparent" Width="30" BorderBrush="Transparent"
+                    Style="{StaticResource NoHoverButtonStyle}" Margin="120,90,0,0">
+                <Image Source="settingsIcon.png" Stretch="Uniform" Width="30" Height="30"/>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

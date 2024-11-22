@@ -81,19 +81,38 @@ namespace Tetris
 
         public void InitializeUIGameBoard(Canvas GameCanvas, int CellSize)
         {
-            cellRectangles = new Rectangle[board.GetLength(0), board.GetLength(1)];
+            int rows = board.GetLength(0);
+            int cols = board.GetLength(1);
 
-            for (int row = 0; row < board.GetLength(0) - 1; row++)
+            double strokeThickness = 2; // Set a consistent and visible stroke thickness
+
+            // Create a single border rectangle for the entire game board
+            var borderRectangle = new Rectangle
             {
-                for (int col = 1; col < board.GetLength(1) - 1; col++)
+                Width = (cols - 2) * CellSize + strokeThickness, // Add strokeThickness to ensure the right wall is visible
+                Height = (rows - 1) * CellSize + strokeThickness, // Add strokeThickness to ensure the bottom wall is visible
+                Stroke = Brushes.White,
+                StrokeThickness = strokeThickness,
+                Fill = Brushes.Transparent // Make the interior transparent
+            };
+
+            // Position the border rectangle (account for stroke thickness offset)
+            Canvas.SetTop(borderRectangle, 0 - strokeThickness / 2);
+            Canvas.SetLeft(borderRectangle, CellSize - strokeThickness / 2);
+
+            GameCanvas.Children.Add(borderRectangle);
+
+            // Initialize cellRectangles without strokes
+            cellRectangles = new Rectangle[rows, cols];
+            for (int row = 0; row < rows - 1; row++)
+            {
+                for (int col = 1; col < cols - 1; col++)
                 {
                     var rectangle = new Rectangle
                     {
                         Width = CellSize,
                         Height = CellSize,
-                        Fill = Brushes.Black,
-                        Stroke = Brushes.White,
-                        StrokeThickness = 0.2
+                        Fill = Brushes.Black
                     };
 
                     Canvas.SetTop(rectangle, row * CellSize);
@@ -105,6 +124,35 @@ namespace Tetris
             }
         }
 
+
+
+
+        //public void InitializeUIGameBoard(Canvas GameCanvas, int CellSize)
+        //{
+        //    cellRectangles = new Rectangle[board.GetLength(0), board.GetLength(1)];
+
+        //    for (int row = 0; row < board.GetLength(0) - 1; row++)
+        //    {
+        //        for (int col = 1; col < board.GetLength(1) - 1; col++)
+        //        {
+        //            var rectangle = new Rectangle
+        //            {
+        //                Width = CellSize,
+        //                Height = CellSize,
+        //                Fill = Brushes.Black,
+        //                Stroke = Brushes.White,
+        //                StrokeThickness = 0.2
+        //            };
+
+        //            Canvas.SetTop(rectangle, row * CellSize);
+        //            Canvas.SetLeft(rectangle, col * CellSize);
+
+        //            GameCanvas.Children.Add(rectangle);
+        //            cellRectangles[row, col] = rectangle;
+        //        }
+        //    }
+        //}
+
         public void UpdateUIGameBoard(Block currentBlock)
         {
             for (int row = 0; row < board.GetLength(0) - 1; row++)
@@ -113,6 +161,14 @@ namespace Tetris
                 {
                     int cellValue = GetCell(row, col);
                     cellRectangles[row, col].Fill = GetCellColor(cellValue, row, col);
+                    //cellRectangles[row, col].Stroke = Brushes.White;
+                    cellRectangles[row, col].StrokeThickness = 0.2;
+
+                    if (cellValue > 0)
+                    {
+                        cellRectangles[row, col].Stroke = Brushes.Black;
+                        cellRectangles[row, col].StrokeThickness = 1.5;
+                    }
                 }
             }
         }

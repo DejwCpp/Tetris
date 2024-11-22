@@ -62,9 +62,9 @@ namespace Tetris
             currentBlock.GenerateBlock(gameBoard);
             currentBlock.PlaceBlockOnBoard(gameBoard);
 
+            // Generate the second block
             nextBlock = new Block();
             nextBlock.GenerateBlock(gameBoard);
-
             RenderNextBlock(nextBlock);
 
             gameBoard.UpdateUIGameBoard(currentBlock);
@@ -240,7 +240,7 @@ namespace Tetris
         public void AddScore(int points)
         {
             score += points;
-            scoreLabel.Text = "Wynik: " + score.ToString();
+            scoreLabel.Text = "Score: " + score.ToString();
         }
 
         private void UpdateGameLevel()
@@ -256,7 +256,7 @@ namespace Tetris
         private void UpdateGameInfo(int level, int newFallSpeedMs)
         {
             gameLvl = level;
-            gameLvlLabel.Text = "Poziom: " + gameLvl.ToString();
+            gameLvlLabel.Text = "Level " + gameLvl.ToString();
             currentBlock.FallSpeedMs = newFallSpeedMs;
             normalFallSpeed = currentBlock.FallSpeedMs;
             fastFallSpeed = normalFallSpeed / 10;
@@ -275,13 +275,14 @@ namespace Tetris
             int cols = shape.GetLength(1);
 
             // Calculate scaling for rectangles
-            double rectangleSize = CellSize * 1.5;
+            double cellSize = CellSize * 1.5;
+            double rectangleSize = cellSize + 1;
 
             // Calculate the center offset
             double canvasWidth = NextBlockCanvas.ActualWidth;
             double canvasHeight = NextBlockCanvas.ActualHeight;
-            double shapeWidth = cols * rectangleSize;
-            double shapeHeight = rows * rectangleSize;
+            double shapeWidth = cols * cellSize;
+            double shapeHeight = rows * cellSize;
             double offsetX = (canvasWidth - shapeWidth) / 2;
             double offsetY = (canvasHeight - shapeHeight) / 2;
 
@@ -302,12 +303,12 @@ namespace Tetris
                             Width = rectangleSize,
                             Height = rectangleSize,
                             Fill = color,
-                            Stroke = Brushes.White,
-                            StrokeThickness = 0.4
+                            Stroke = Brushes.Black,
+                            StrokeThickness = 2
                         };
 
-                        Canvas.SetTop(rectangle, offsetX + i * rectangleSize);
-                        Canvas.SetLeft(rectangle, offsetY + j * rectangleSize);
+                        Canvas.SetTop(rectangle, offsetX + i * cellSize + 1);
+                        Canvas.SetLeft(rectangle, offsetY + j * cellSize + 1);
                         NextBlockCanvas.Children.Add(rectangle);
                     }
                 }
@@ -335,16 +336,26 @@ namespace Tetris
             currentBlock.GenerateBlock(gameBoard);
             gameBoard.UpdateUIGameBoard(currentBlock);
 
+            // Generate the second block
+            nextBlock = new Block();
+            nextBlock.GenerateBlock(gameBoard);
+            RenderNextBlock(nextBlock);
+
             // Restart the timer
             gameTimer.Interval = TimeSpan.FromMilliseconds(normalFallSpeed);
             gameTimer.Start();
 
             // Reset the score
             score = 0;
-            scoreLabel.Text = "Wynik: 0";
+            scoreLabel.Text = "Score: 0";
 
             // Reset the level
-            gameLvlLabel.Text = "Poziom: 0";
+            gameLvlLabel.Text = "Level 0";
+        }
+
+        private void OpenSettings(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Settings works");
         }
 
         private void PlaySoundtrack()
