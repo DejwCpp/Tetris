@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="icons\soundOffIcon.png" />
+    <None Remove="icons\soundOnIcon.png" />
     <None Remove="settingsIcon.png" />
     <None Remove="tetrisTheme.mp3" />
   </ItemGroup>
@@ -20,7 +22,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="settingsIcon.png" />
+    <Resource Include="icons\settingsIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\soundOffIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\soundOnIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

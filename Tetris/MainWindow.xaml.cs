@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -24,13 +25,14 @@ namespace Tetris
         private const int GameBoardNumOfRows = 18;
         private Block currentBlock;
         private Block nextBlock;
-        //private List<Block> activeBlocks = new List<Block>();
 
         private double normalFallSpeed;
         private double fastFallSpeed;
         private bool isFastFalling;
 
         private bool isSpacePressed = false;
+
+        private bool isSoundOn = true;
 
         private DispatcherTimer gameTimer;
         private DispatcherTimer movementTimer;
@@ -319,7 +321,17 @@ namespace Tetris
         {
             gameTimer.Stop();
             mediaPlayer.Stop();
+
+            // Saving score to the file
+            ScoreManager scoresFile = new ScoreManager("scores.txt");
+            scoresFile.SaveScoreWithHash(score);
+
+            // Display your score and best score in window
+            yourScore.Text = $"Your last score: {score}";
+            bestScore.Text = $"Best score: {scoresFile.GetBestScoreWithHash()}";
+
             MessageBox.Show("Game over. Try again!");
+
             ResetGame();
         }
 
@@ -350,12 +362,28 @@ namespace Tetris
             scoreLabel.Text = "Score: 0";
 
             // Reset the level
-            gameLvlLabel.Text = "Level 0";
+            gameLvlLabel.Text = "Level 1";
+        }
+
+        private void ChangedVolumeStatus(object sender, RoutedEventArgs e)
+        {
+            if (isSoundOn == true)
+            {
+                soundIconUI.Source = new BitmapImage(new Uri("icons/soundOffIcon.png", UriKind.Relative));
+                
+                mediaPlayer.Pause();
+
+                isSoundOn = false;
+                return;
+            }
+            isSoundOn = true;
+            soundIconUI.Source = new BitmapImage(new Uri("icons/soundOnIcon.png", UriKind.Relative));
+            mediaPlayer.Play();
         }
 
         private void OpenSettings(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Settings works");
+            MessageBox.Show("This functionality is not finished yet");
         }
 
         private void PlaySoundtrack()
@@ -363,7 +391,6 @@ namespace Tetris
             try
             {
                 mediaPlayer = new MediaPlayer();
-                //mediaPlayer.Open(new Uri("pack://application:,,,/Resources/TetrisTheme.mp3")); // Upewnij się, że ścieżka jest poprawna
                 mediaPlayer.Open(new Uri("tetrisTheme.mp3", UriKind.Relative));
                 mediaPlayer.MediaOpened += (sender, e) =>
                 {
