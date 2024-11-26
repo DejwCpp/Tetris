@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="fonts\PressStart2P-Regular.ttf" />
+    <None Remove="icons\pauseIcon.png" />
+    <None Remove="icons\playIcon.png" />
+    <None Remove="icons\restartIcon.png" />
     <None Remove="icons\soundOffIcon.png" />
     <None Remove="icons\soundOnIcon.png" />
     <None Remove="settingsIcon.png" />
@@ -22,6 +26,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="fonts\PressStart2P-Regular.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="icons\pauseIcon.png" />
+    <Resource Include="icons\playIcon.png" />
+    <Resource Include="icons\restartIcon.png" />
     <Resource Include="icons\settingsIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

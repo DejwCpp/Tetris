@@ -10,8 +10,9 @@
         WindowStartupLocation="CenterScreen"
         Width="450"
         Height="450">
-    <!-- Preventing button to change background after hover -->
+    
     <Window.Resources>
+        <!-- Preventing button to change background after hover -->
         <Style x:Key="NoHoverButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
@@ -23,6 +24,12 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+        <!-- Setting default font to TextBlocks from assets -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="pack://application:,,,/fonts/#Press Start 2P"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Foreground" Value="White"/>
         </Style>
     </Window.Resources>
     <Grid Background="Black">
@@ -72,7 +79,7 @@
 
             <!-- Wynik -->
             <TextBlock Name="scoreLabel"
-                       Text="Score: 0"
+                       Text="Score:0"
                        FontSize="16"
                        Foreground="White"
                        HorizontalAlignment="Center"
@@ -80,26 +87,38 @@
             
             <TextBlock Name="yourScore"
                        Text=""
-                       FontSize="16"
                        Foreground="White"
                        HorizontalAlignment="Center"
+                       FontSize="10"
                        Margin="0,10,0,0"/>
 
             <TextBlock Name="bestScore"
                        Text=""
-                       FontSize="16"
                        Foreground="White"
                        HorizontalAlignment="Center"
+                       FontSize="10"
                        Margin="0,10,0,25"/>
 
-            <Grid Width="100" Margin="80,0,0,0">
+            <Grid Width="160" Margin="0,40,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Button Click="ChangedVolumeStatus"
+                <Button Click="ChangedPlayStatus"
                         Grid.Column="0"
+                        Background="Transparent"
+                        Width="30"
+                        BorderBrush="Transparent"
+                        Style="{StaticResource NoHoverButtonStyle}"
+                        Focusable="False"
+                        Cursor="Hand">
+                    <Image Name="playStatus" Source="icons/playIcon.png" Stretch="Uniform" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Button>
+
+                <Button Click="ChangedVolumeStatus"
+                        Grid.Column="1"
                         Background="Transparent"
                         Width="30"
                         BorderBrush="Transparent"
@@ -110,7 +129,7 @@
                 </Button>
 
                 <Button Click="OpenSettings"
-                        Grid.Column="1"
+                        Grid.Column="2"
                         Background="Transparent"
                         Width="30"
                         BorderBrush="Transparent"

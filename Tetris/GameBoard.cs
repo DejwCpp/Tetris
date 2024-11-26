@@ -124,35 +124,6 @@ namespace Tetris
             }
         }
 
-
-
-
-        //public void InitializeUIGameBoard(Canvas GameCanvas, int CellSize)
-        //{
-        //    cellRectangles = new Rectangle[board.GetLength(0), board.GetLength(1)];
-
-        //    for (int row = 0; row < board.GetLength(0) - 1; row++)
-        //    {
-        //        for (int col = 1; col < board.GetLength(1) - 1; col++)
-        //        {
-        //            var rectangle = new Rectangle
-        //            {
-        //                Width = CellSize,
-        //                Height = CellSize,
-        //                Fill = Brushes.Black,
-        //                Stroke = Brushes.White,
-        //                StrokeThickness = 0.2
-        //            };
-
-        //            Canvas.SetTop(rectangle, row * CellSize);
-        //            Canvas.SetLeft(rectangle, col * CellSize);
-
-        //            GameCanvas.Children.Add(rectangle);
-        //            cellRectangles[row, col] = rectangle;
-        //        }
-        //    }
-        //}
-
         public void UpdateUIGameBoard(Block currentBlock)
         {
             for (int row = 0; row < board.GetLength(0) - 1; row++)

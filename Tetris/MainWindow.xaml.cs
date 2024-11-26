@@ -242,17 +242,21 @@ namespace Tetris
         public void AddScore(int points)
         {
             score += points;
-            scoreLabel.Text = "Score: " + score.ToString();
+            scoreLabel.Text = "Score:" + score.ToString();
         }
 
         private void UpdateGameLevel()
         {
-            if (score >= 100) UpdateGameInfo(2, 800);
-            if (score >= 250) UpdateGameInfo(3, 700);
-            if (score >= 500) UpdateGameInfo(4, 600);
-            if (score >= 1000) UpdateGameInfo(5, 500);
-            if (score >= 2000) UpdateGameInfo(6, 400);
-            if (score >= 5000) UpdateGameInfo(7, 300);
+            switch (score)
+            {
+                case >= 6000: UpdateGameInfo(8, 250); break;
+                case >= 4000: UpdateGameInfo(7, 350); break;
+                case >= 2000: UpdateGameInfo(6, 400); break;
+                case >= 1000: UpdateGameInfo(5, 500); break;
+                case >= 500: UpdateGameInfo(4, 600); break;
+                case >= 250: UpdateGameInfo(3, 700); break;
+                case >= 100: UpdateGameInfo(2, 800); break;
+            }
         }
 
         private void UpdateGameInfo(int level, int newFallSpeedMs)
@@ -327,7 +331,7 @@ namespace Tetris
             scoresFile.SaveScoreWithHash(score);
 
             // Display your score and best score in window
-            yourScore.Text = $"Your last score: {score}";
+            yourScore.Text = $"Last score: {score}";
             bestScore.Text = $"Best score: {scoresFile.GetBestScoreWithHash()}";
 
             MessageBox.Show("Game over. Try again!");
@@ -357,6 +361,9 @@ namespace Tetris
             gameTimer.Interval = TimeSpan.FromMilliseconds(normalFallSpeed);
             gameTimer.Start();
 
+            // Reset the movement
+            movementDirection = string.Empty;
+
             // Reset the score
             score = 0;
             scoreLabel.Text = "Score: 0";
@@ -365,12 +372,17 @@ namespace Tetris
             gameLvlLabel.Text = "Level 1";
         }
 
+        private void ChangedPlayStatus(object sender,RoutedEventArgs e)
+        {
+            MessageBox.Show("This functionality is not finished yet");
+        }
+
         private void ChangedVolumeStatus(object sender, RoutedEventArgs e)
         {
             if (isSoundOn == true)
             {
                 soundIconUI.Source = new BitmapImage(new Uri("icons/soundOffIcon.png", UriKind.Relative));
-                
+
                 mediaPlayer.Pause();
 
                 isSoundOn = false;
