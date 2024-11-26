@@ -34,6 +34,10 @@ namespace Tetris
 
         private bool isSoundOn = true;
 
+        private bool isGameStarted = false;
+
+        private bool canBlockMove = true;
+
         private DispatcherTimer gameTimer;
         private DispatcherTimer movementTimer;
         private string movementDirection;
@@ -46,10 +50,30 @@ namespace Tetris
 
         private MediaPlayer mediaPlayer;
 
+        enum Status
+        {
+            None,
+            Started,
+            Paused,
+            Restart
+        }
+
+        Status gameStatus = Status.None;
+
         public MainWindow()
         {
             InitializeComponent();
-            PlaySoundtrack();
+            InitializeSoundtrack();
+
+            this.KeyDown += OnKeyDown;
+            this.KeyUp += OnKeyUp;
+        }
+
+        private void StartGame()
+        {
+            isGameStarted = true;
+
+            if (isSoundOn == true) mediaPlayer.Play();
 
             // Set DataContext for binding
             DataContext = this;
@@ -71,7 +95,6 @@ namespace Tetris
 
             gameBoard.UpdateUIGameBoard(currentBlock);
 
-
             normalFallSpeed = currentBlock.FallSpeedMs;
             fastFallSpeed = normalFallSpeed / 10;
             isFastFalling = false;
@@ -90,9 +113,15 @@ namespace Tetris
                 Interval = TimeSpan.FromMilliseconds(100)
             };
             movementTimer.Tick += MovementTick;
+        }
 
-            this.KeyDown += OnKeyDown;
-            this.KeyUp += OnKeyUp;
+        private void StartGameOnSpace()
+        {
+            isGameStarted = true;
+            gameStatus = Status.Started;
+            startingMessage.Visibility = Visibility.Collapsed;
+            gameStatusImage.Source = ChangeImage("icons/pauseIcon.png");
+            StartGame();
         }
 
         private void GameTick(object sender, EventArgs e)
@@ -160,6 +189,14 @@ namespace Tetris
 
         private void OnKeyDown(object sender, KeyEventArgs e)
         {
+            if (!isGameStarted)
+            {
+                StartGameOnSpace();
+                return;
+            }
+
+            if (!canBlockMove) return;
+
             // Clear the current block position before moving
             currentBlock.ClearBlockFromBoard(gameBoard);
 
@@ -334,15 +371,18 @@ namespace Tetris
             yourScore.Text = $"Last score: {score}";
             bestScore.Text = $"Best score: {scoresFile.GetBestScoreWithHash()}";
 
-            MessageBox.Show("Game over. Try again!");
+            // Change gameStatus image
+            gameStatusImage.Source = ChangeImage("icons/restartIcon.png");
 
-            ResetGame();
+            canBlockMove = false;
+
+            gameStatus = Status.Restart;
         }
 
-        private void ResetGame()
+        private void RestartGame()
         {
             // Start the music
-            mediaPlayer.Play();
+            if (isSoundOn) mediaPlayer.Play();
 
             gameBoard = new GameBoard(this, GameBoardNumOfRows, GameBoardNumOfColumns);
             gameBoard.InitializeUIGameBoard(GameCanvas, CellSize);
@@ -363,6 +403,7 @@ namespace Tetris
 
             // Reset the movement
             movementDirection = string.Empty;
+            canBlockMove = true;
 
             // Reset the score
             score = 0;
@@ -372,16 +413,70 @@ namespace Tetris
             gameLvlLabel.Text = "Level 1";
         }
 
+        private void PauseGame()
+        {
+            gameTimer.Stop();
+            canBlockMove = false;
+            mediaPlayer.Pause();
+        }
+
+        private void ResumeGame()
+        {
+            gameTimer.Start();
+            canBlockMove = true;
+            mediaPlayer.Play();
+        }
+
         private void ChangedPlayStatus(object sender,RoutedEventArgs e)
         {
-            MessageBox.Show("This functionality is not finished yet");
+            switch(gameStatus)
+            {
+                // Starting the game
+                case Status.None:
+                {
+                    gameStatus = Status.Started;
+                    startingMessage.Visibility = Visibility.Collapsed;
+                    gameStatusImage.Source = ChangeImage("icons/pauseIcon.png");
+                    StartGame();
+                    break;
+                }
+                // Pausing the game
+                case Status.Started:
+                {
+                    gameStatus = Status.Paused;
+                    gameStatusImage.Source = ChangeImage("icons/playIcon.png");
+                    PauseGame();
+                    break;
+                }
+                // Resume the game
+                case Status.Paused:
+                {
+                    gameStatus = Status.Started;
+                    gameStatusImage.Source = ChangeImage("icons/pauseIcon.png");
+                    ResumeGame();
+                    break;
+                }
+                // Restarting the game
+                case Status.Restart:
+                {
+                    gameStatus = Status.Started;
+                    gameStatusImage.Source = ChangeImage("icons/pauseIcon.png");
+                    RestartGame();
+                    break;
+                }
+            }
+        }
+
+        private BitmapImage ChangeImage(string path)
+        {
+            return new BitmapImage(new Uri(path, UriKind.Relative));
         }
 
         private void ChangedVolumeStatus(object sender, RoutedEventArgs e)
         {
             if (isSoundOn == true)
             {
-                soundIconUI.Source = new BitmapImage(new Uri("icons/soundOffIcon.png", UriKind.Relative));
+                soundIconUI.Source = ChangeImage("icons/soundOffIcon.png");
 
                 mediaPlayer.Pause();
 
@@ -389,7 +484,7 @@ namespace Tetris
                 return;
             }
             isSoundOn = true;
-            soundIconUI.Source = new BitmapImage(new Uri("icons/soundOnIcon.png", UriKind.Relative));
+            soundIconUI.Source = ChangeImage("icons/soundOnIcon.png");
             mediaPlayer.Play();
         }
 
@@ -398,32 +493,22 @@ namespace Tetris
             MessageBox.Show("This functionality is not finished yet");
         }
 
-        private void PlaySoundtrack()
+        private void InitializeSoundtrack()
         {
             try
             {
                 mediaPlayer = new MediaPlayer();
                 mediaPlayer.Open(new Uri("tetrisTheme.mp3", UriKind.Relative));
-                mediaPlayer.MediaOpened += (sender, e) =>
-                {
-                    //MessageBox.Show("Plik audio załadowany pomyślnie.");
-                };
-                mediaPlayer.MediaFailed += (sender, e) =>
-                {
-                    MessageBox.Show("Błąd odtwarzania pliku audio: " + e.ErrorException.Message);
-                };
 
                 mediaPlayer.MediaEnded += (sender, e) =>
                 {
                     mediaPlayer.Position = TimeSpan.Zero;
                     mediaPlayer.Play();
                 };
-
-                mediaPlayer.Play();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Wystąpił błąd: " + ex.Message);
+                MessageBox.Show("Error: " + ex.Message);
             }
         }
     }

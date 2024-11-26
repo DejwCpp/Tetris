@@ -41,17 +41,37 @@
             <ColumnDefinition Width="190" />
         </Grid.ColumnDefinitions>
 
-        <!-- Sekcja gry (dynamiczna szerokość) -->
+        <!-- Sekcja gry -->
         <Border Grid.Column="0"
                 Background="Black"
                 VerticalAlignment="Center"
                 MinHeight="400"
                 MinWidth="{Binding Path=GameBoardWidth}" 
                 MaxWidth="{Binding Path=GameBoardWidth}" Height="400">
-            <Canvas Name="GameCanvas"
-                    Width="{Binding Path=GameBoardWidth}"
-                    Height="400"
-                    Background="Black" />
+            <Grid>
+                <!-- Canvas for the game -->
+                <Canvas Name="GameCanvas"
+                        Width="{Binding Path=GameBoardWidth}"
+                        Height="400"
+                        Background="Black" />
+                
+                <!-- Play button with text in the center -->
+                <StackPanel Name="startingMessage"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="15,0,0,0">
+                    <Button Click="ChangedPlayStatus"
+                            Style="{StaticResource NoHoverButtonStyle}"
+                            Focusable="False"
+                            Cursor="Hand"
+                            Width="70"
+                            Height="70">
+                        <Image Source="icons/playIcon.png"/>
+                    </Button>
+                    <TextBlock Text="Play" HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+
         </Border>
 
         <!-- Sekcja informacji (stała wysokość i szerokość) -->
@@ -114,7 +134,7 @@
                         Style="{StaticResource NoHoverButtonStyle}"
                         Focusable="False"
                         Cursor="Hand">
-                    <Image Name="playStatus" Source="icons/playIcon.png" Stretch="Uniform" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Image Name="gameStatusImage" Stretch="Uniform" Width="30" Height="30" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Button>
 
                 <Button Click="ChangedVolumeStatus"

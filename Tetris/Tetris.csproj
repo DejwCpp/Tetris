@@ -31,7 +31,9 @@
     </Resource>
     <Resource Include="icons\pauseIcon.png" />
     <Resource Include="icons\playIcon.png" />
-    <Resource Include="icons\restartIcon.png" />
+    <Resource Include="icons\restartIcon.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="icons\settingsIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
