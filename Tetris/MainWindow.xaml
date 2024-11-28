@@ -10,7 +10,7 @@
         WindowStartupLocation="CenterScreen"
         Width="450"
         Height="450">
-    
+
     <Window.Resources>
         <!-- Preventing button to change background after hover -->
         <Style x:Key="NoHoverButtonStyle" TargetType="Button">
@@ -31,6 +31,12 @@
             <Setter Property="FontSize" Value="16"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
+        <!-- Setting default font to TextBox from assets -->
+        <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="pack://application:,,,/fonts/#Press Start 2P"/>
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
     </Window.Resources>
     <Grid Background="Black">
         <!-- Główna siatka z dwoma kolumnami -->
@@ -40,6 +46,9 @@
             <!-- Stała szerokość sekcji informacji -->
             <ColumnDefinition Width="190" />
         </Grid.ColumnDefinitions>
+
+        <!-- Define a ContentControl that will hold the dynamic content -->
+        <ContentControl Name="MainContent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 
         <!-- Sekcja gry -->
         <Border Grid.Column="0"
@@ -54,7 +63,7 @@
                         Width="{Binding Path=GameBoardWidth}"
                         Height="400"
                         Background="Black" />
-                
+
                 <!-- Play button with text in the center -->
                 <StackPanel Name="startingMessage"
                             HorizontalAlignment="Center"
@@ -70,8 +79,26 @@
                     </Button>
                     <TextBlock Text="Play" HorizontalAlignment="Center"/>
                 </StackPanel>
+                <!-- Entering nickname in the bottom -->
+                <StackPanel Name="settingNickname"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Margin="15,300,0,0">
+                    <TextBlock Text="Nickname: (optionally)"
+                               HorizontalAlignment="Center"
+                               FontSize="10"/>
+                    <TextBox Name="txtBox_nickname"
+                             Width="200"
+                             Height="27"
+                             Margin="0,10,0,0"
+                             Background="#0d1321"
+                             Foreground="White"
+                             BorderThickness="0"
+                             TextAlignment="Center"
+                             VerticalContentAlignment="Center"
+                             TextChanged="TextBox_TextChanged"/>
+                </StackPanel>
             </Grid>
-
         </Border>
 
         <!-- Sekcja informacji (stała wysokość i szerokość) -->
@@ -104,7 +131,7 @@
                        Foreground="White"
                        HorizontalAlignment="Center"
                        Margin="0,10,0,20"/>
-            
+
             <TextBlock Name="yourScore"
                        Text=""
                        Foreground="White"

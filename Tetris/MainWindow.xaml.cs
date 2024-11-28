@@ -47,6 +47,7 @@ namespace Tetris
 
         public int score { get; set; } = 0;
         private int gameLvl { get; set; } = 1;
+        public string nickname = "";
 
         private MediaPlayer mediaPlayer;
 
@@ -74,6 +75,9 @@ namespace Tetris
             isGameStarted = true;
 
             if (isSoundOn == true) mediaPlayer.Play();
+
+            // Assign the nickname
+            nickname = string.IsNullOrEmpty(txtBox_nickname.Text) ? "unknown" : txtBox_nickname.Text;
 
             // Set DataContext for binding
             DataContext = this;
@@ -115,11 +119,15 @@ namespace Tetris
             movementTimer.Tick += MovementTick;
         }
 
-        private void StartGameOnSpace()
+        private void StartGameOnSpace(KeyEventArgs e)
         {
+            if (e.Key != Key.Space) return;
+
             isGameStarted = true;
+            nickname = string.IsNullOrEmpty(nickname) ? "unknown" : txtBox_nickname.Text;
             gameStatus = Status.Started;
             startingMessage.Visibility = Visibility.Collapsed;
+            settingNickname.Visibility = Visibility.Collapsed;
             gameStatusImage.Source = ChangeImage("icons/pauseIcon.png");
             StartGame();
         }
@@ -191,7 +199,7 @@ namespace Tetris
         {
             if (!isGameStarted)
             {
-                StartGameOnSpace();
+                StartGameOnSpace(e);
                 return;
             }
 
@@ -364,12 +372,12 @@ namespace Tetris
             mediaPlayer.Stop();
 
             // Saving score to the file
-            ScoreManager scoresFile = new ScoreManager("scores.txt");
-            scoresFile.SaveScoreWithHash(score);
+            ScoreManager scoresFile = new ScoreManager("scores.json");
+            scoresFile.SaveScore(score, nickname);
 
             // Display your score and best score in window
             yourScore.Text = $"Last score: {score}";
-            bestScore.Text = $"Best score: {scoresFile.GetBestScoreWithHash()}";
+            bestScore.Text = $"Best score: {scoresFile.GetBestScore()}";
 
             // Change gameStatus image
             gameStatusImage.Source = ChangeImage("icons/restartIcon.png");
@@ -436,6 +444,7 @@ namespace Tetris
                 {
                     gameStatus = Status.Started;
                     startingMessage.Visibility = Visibility.Collapsed;
+                    settingNickname.Visibility = Visibility.Collapsed;
                     gameStatusImage.Source = ChangeImage("icons/pauseIcon.png");
                     StartGame();
                     break;
@@ -490,7 +499,9 @@ namespace Tetris
 
         private void OpenSettings(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("This functionality is not finished yet");
+            SettingsUserControl settingsControl = new SettingsUserControl();
+
+            MainContent.Content = settingsControl;
         }
 
         private void InitializeSoundtrack()
@@ -509,6 +520,27 @@ namespace Tetris
             catch (Exception ex)
             {
                 MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            var textBox = sender as TextBox;
+
+            var length = textBox.Text.Length;
+
+            // Prevents text to be longer than 9 characters
+            if (length > 9)
+            {
+                textBox.Text = textBox.Text.Substring(0, 9);
+                textBox.CaretIndex = length;
+                return;
+            }
+            // Prevents writing space
+            if (textBox.Text.Contains(" "))
+            {
+                textBox.Text = textBox.Text.Substring(0, length - 1);
+                textBox.CaretIndex = length - 1;
             }
         }
     }

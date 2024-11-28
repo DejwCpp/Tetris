@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
+using System.Text.Json;
 
 namespace Tetris
 {
-    class ScoreManager
+    public class ScoreEntry
+    {
+        public int Score { get; set; }
+        public string Nickname { get; set; }
+        public string OperatingSystem { get; set; }
+    }
+
+    public class ScoreManager
     {
         private readonly string _filePath;
 
@@ -15,46 +21,48 @@ namespace Tetris
             _filePath = filePath;
         }
 
-        public void SaveScoreWithHash(int score)
+        public void SaveScore(int score, string nickname)
         {
-            string data = score.ToString();
-            string hash = ComputeHash(data);
-
-            File.AppendAllText(_filePath, $"{data}|{hash}" + Environment.NewLine);
-        }
-
-        public int GetBestScoreWithHash()
-        {
-            if (!File.Exists(_filePath)) return 0;
-
-            var scores = File.ReadAllLines(_filePath)
-                .Select(line =>
-                {
-                    var parts = line.Split('|');
-                    if (parts.Length == 2 && VerifyHash(parts[0], parts[1]))
-                    {
-                        return int.Parse(parts[0]);
-                    }
-                    return -1; // invalid score
-                })
-                .Where(score => score != -1)
-                .ToList();
-
-            return scores.Count > 0 ? scores.Max() : 0;
-        }
-
-        private string ComputeHash(string input)
-        {
-            using (var sha256 = SHA256.Create())
+            var entry = new ScoreEntry
             {
-                var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(input));
-                return Convert.ToBase64String(bytes);
-            }
+                Score = score,
+                Nickname = nickname,
+                OperatingSystem = Environment.OSVersion.ToString()
+            };
+
+            List<ScoreEntry> scores = LoadScores();
+            scores.Add(entry);
+
+            string json = JsonSerializer.Serialize(scores, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText(_filePath, json);
         }
 
-        private bool VerifyHash(string data, string hash)
+        public int GetBestScore()
         {
-            return ComputeHash(data) == hash;
+            List<ScoreEntry> scores = LoadScores();
+
+            if (scores.Count == 0)
+                return 0;
+
+            return scores.Max(entry => entry.Score);
+        }
+
+        private List<ScoreEntry> LoadScores()
+        {
+            if (!File.Exists(_filePath))
+                return new List<ScoreEntry>();
+
+            string json = File.ReadAllText(_filePath);
+
+            try
+            {
+                return JsonSerializer.Deserialize<List<ScoreEntry>>(json) ?? new List<ScoreEntry>();
+            }
+            catch (JsonException)
+            {
+                // Handle cases where the JSON file is corrupted
+                return new List<ScoreEntry>();
+            }
         }
     }
 }
