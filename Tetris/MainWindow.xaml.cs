@@ -34,7 +34,11 @@ namespace Tetris
 
         private bool isSoundOn = true;
 
+        private bool isSettingsTurnedOn = false;
+
         private bool isGameStarted = false;
+
+        private bool isGameOver = false;
 
         private bool canBlockMove = true;
 
@@ -50,6 +54,7 @@ namespace Tetris
         public string nickname = "";
 
         private MediaPlayer mediaPlayer;
+        ScoreManager scoresFile;
 
         enum Status
         {
@@ -66,6 +71,10 @@ namespace Tetris
             InitializeComponent();
             InitializeSoundtrack();
 
+            scoresFile = new ScoreManager("scores.json");
+
+            SettingsUI.Visibility = Visibility.Collapsed;
+
             this.KeyDown += OnKeyDown;
             this.KeyUp += OnKeyUp;
         }
@@ -76,6 +85,8 @@ namespace Tetris
 
             if (isSoundOn == true) mediaPlayer.Play();
 
+            // Disable clicking settings
+            settingsIcon.Visibility = Visibility.Collapsed;
             // Assign the nickname
             nickname = string.IsNullOrEmpty(txtBox_nickname.Text) ? "unknown" : txtBox_nickname.Text;
 
@@ -368,11 +379,12 @@ namespace Tetris
 
         private void GameOver()
         {
+            isGameOver = true;
+
             gameTimer.Stop();
             mediaPlayer.Stop();
 
             // Saving score to the file
-            ScoreManager scoresFile = new ScoreManager("scores.json");
             scoresFile.SaveScore(score, nickname);
 
             // Display your score and best score in window
@@ -385,10 +397,15 @@ namespace Tetris
             canBlockMove = false;
 
             gameStatus = Status.Restart;
+
+            // Enable clicking settings
+            settingsIcon.Visibility = Visibility.Visible;
         }
 
         private void RestartGame()
         {
+            isGameOver = false;
+
             // Start the music
             if (isSoundOn) mediaPlayer.Play();
 
@@ -499,9 +516,40 @@ namespace Tetris
 
         private void OpenSettings(object sender, RoutedEventArgs e)
         {
-            SettingsUserControl settingsControl = new SettingsUserControl();
+            if (!isSettingsTurnedOn)
+            {
+                isSettingsTurnedOn = true;
 
-            MainContent.Content = settingsControl;
+                // Display settings sections
+                SettingsUI.Visibility = Visibility.Visible;
+                // Hide colliding sections
+                startingMessage.Visibility = Visibility.Collapsed;
+                settingNickname.Visibility = Visibility.Collapsed;
+                GameCanvas.Visibility = Visibility.Collapsed;
+
+                LeaderboardUI.Text = "Top 10:\n\n" + GetTheLeaderboard(10);
+
+                return;
+            }
+
+            isSettingsTurnedOn = false;
+
+            // Display colliding sections
+            SettingsUI.Visibility = Visibility.Collapsed;
+            // Hide settings sections
+            if (!isGameOver)
+            {
+                startingMessage.Visibility = Visibility.Visible;
+                settingNickname.Visibility = Visibility.Visible;
+            }
+            GameCanvas.Visibility = Visibility.Visible;
+        }
+
+        string GetTheLeaderboard(int quantity)
+        {
+            List<string> bestScores = scoresFile.GetBestScores(quantity);
+
+            return string.Join("\n", bestScores);
         }
 
         private void InitializeSoundtrack()

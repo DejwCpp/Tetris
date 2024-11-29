@@ -98,6 +98,29 @@
                              VerticalContentAlignment="Center"
                              TextChanged="TextBox_TextChanged"/>
                 </StackPanel>
+                <!-- On settings clicked -->
+                <StackPanel Name="SettingsUI"
+                            HorizontalAlignment="Center"
+                            Width="260"
+                            Height="350">
+                    <TextBlock Name="LeaderboardUI"
+                               FontSize="14"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Top"
+                               Margin="10"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               LineHeight="20"
+                               Text="Top 10:"/>
+
+                    <CheckBox Name="EnableSoundCheckBox"
+                              Content="Block drop support"
+                              VerticalAlignment="Bottom"
+                              HorizontalAlignment="Center"
+                              Foreground="White"
+                              Margin="0,50,0,30"/>
+                </StackPanel>   
             </Grid>
         </Border>
 
@@ -183,9 +206,10 @@
                         Style="{StaticResource NoHoverButtonStyle}"
                         Focusable="False"
                         Cursor="Hand">
-                    <Image Source="icons/settingsIcon.png" Stretch="Uniform" Width="30" Height="30"/>
+                    <Image Name="settingsIcon" Source="icons/settingsIcon.png" Stretch="Uniform" Width="30" Height="30"/>
                 </Button>
             </Grid>
         </StackPanel>
     </Grid>
+    
 </Window>

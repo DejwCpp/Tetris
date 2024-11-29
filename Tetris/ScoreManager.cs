@@ -47,6 +47,20 @@ namespace Tetris
             return scores.Max(entry => entry.Score);
         }
 
+        public List<string> GetBestScores(int count)
+        {
+            List<ScoreEntry> scores = LoadScores();
+
+            // Order by score descending and take the requested number of scores
+            var topScores = scores
+                .OrderByDescending(entry => entry.Score)
+                .Take(count)
+                .Select(entry => $"{entry.Nickname.PadLeft(9)}: {entry.Score}")
+                .ToList();
+
+            return topScores;
+        }
+
         private List<ScoreEntry> LoadScores()
         {
             if (!File.Exists(_filePath))
